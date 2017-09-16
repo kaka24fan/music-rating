@@ -1,0 +1,28 @@
++First page of an item:
+
+1 valid bit
+1 set firstPageBit
+id of the item it stores - 32 bits
+item data
+page index of the next page for this item (or 0 if none): 32-log(PAGE_SIZE) bits
+
+Total PAGE_SIZE bits
+
+----
+
++Non-first page of an item:
+
+1 valid bit
+1 cleared firstPageBit
+item data
+page index of the next page for this item (or 0 if none): 32-log(PAGE_SIZE) bits
+
+Total PAGE_SIZE bits
+
+----
+
++An id:
+
+4 bits of item type
+24 bits of id
+4 bits of flags

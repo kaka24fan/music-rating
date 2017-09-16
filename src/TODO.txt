@@ -1,0 +1,7 @@
+#pragma at-least-once
+
+
+Try writing interface for RatingComplex
+Duplicate TypeMap and tweak to get TypeVector
+Write a static 'rating factory' which will gen timestamp and clamp rating values.
+Rename RatingVal to RatingData?

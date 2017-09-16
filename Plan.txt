@@ -1,0 +1,108 @@
+
+-- TO DO:
+
++ Some guarantees about whether reads/writes may move the file pointer or not
++ Currently you can't run out of your item's last page by repeating readNext() but can run out of item within the last page.
+
+IItem:
+ IItem(Id)
+ void assignAddress()
+
+IType<T>:
+ T read(here)
+ virtual void write(here)
+ void writeTerminatorOfMyType(here)
+ bool isTerminator(here)
+
+IComplexType<T> : IType<T>, IItem
+ void write(here) override;
+ void writeFull(here); // writes the actual map/vector
+
+
+TypeId : IType<Id>
+ read(here)
+ write(here)
+ writeZero(here)
+ isValid(Address a) // isZero  -> !isValid
+
+TypeMap<T,U> : IComplexType<T,U>
+ read(here)
+ write(here) // override - writes just the id!
+ writeZero(here) // - just writes a zero id
+ isValid(Address a) // isZero  -> !isValid
+
+
+
+
+
+
+
+
+PLAN << This plan is mostly outdated >>
+
+Should I implement TypeMap using TypeVector< TypePair<K, V> >?
+
+-- QUESTIONS TO ANSWER:
++ Store in text or in binary?
+	% Most of the data is gonna be text.
+	% But we don't want to insert into the middle of the file, which we'd
+		have to do to keep the text human-readable (what do you mean???)
+	% Will be more of a challenge in binary
+
++ What types of commands will we support?
+
+-- DATA FLOW
+Pick a file to be read/written
+Read the whole file into a char* or maybe vector<char> in memory
+Modify it
+Write whole thing back <- can have fun with dirty sector bits later!
+
+-- GENERAL ITEM
+Should make a general class Item that can have arbitrary fields (primitives and lists)
+That class Item should handle writing and provide help for reading
+We want something like:
+-given that
+Song is Item with:
+std::vector<Artist>, std::vector<Artist>, std::string.
+-we can now do Song::Write(m_leadArtists, m_featuringArtists, m_title);
+-           or Song::Read(&m_leadArtists, &m_featuringArtists, &m_title);
+That read/write should keep to the format I think up.
+
+-- REQUIREMENT
+Use wide char strings to accommodate for Polish names!
+
+-- SEMANTICS
+One song can be shared between albums
+One Rating object can't be shared between things
+
+-- RATING OBJECT
+Is a map from authors to chronological lists of ratings
+Each single rating has a timestamp, score and its author
+
+-- SONGS STORAGE
+Store songs in fixed size blocks
+If size exceeded, move to the end and increase block size
+
+-- ALBUMS STORAGE
+Store albums in fixed size blocks
+A size like 32 songs should very rarely be exceeded
+If size exceeded, move to the end and increase block size
+ 
+-- ARTIST STORAGE
+Store artists in fixed size blocks
+If size exceeded, move to the end and increase block size
+
+-- AN IDEA (THOUGHT ABOUT BINARY STORAGE)
+Have d be the highest common divisor of all block sizes
+Then begin every object (artist/song/album) with a description
+	of the object
+And in objects bigger than d, make sure to put zeroes every d positions
+	to indicate it's not a start of another object
+
+-- AN IDEA
+Have each item's description start with its length in bytes/lines.
+
+-- SOME CRASH SAFETY
+Have n copies of the file
+When opening program, copy the freshest file onto 
+	the stalest file and work on that
