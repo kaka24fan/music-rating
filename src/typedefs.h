@@ -14,7 +14,7 @@ typedef unsigned int PageIndex; // 32 bits
 
 typedef char32_t Char; // 32 bits
 
-typedef std::string Name;
+typedef std::u32string Name;
 
 /*
 class RatingVal

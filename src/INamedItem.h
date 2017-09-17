@@ -1,8 +1,11 @@
-#include "stdafx.h"
+#pragma once
 
-class INamedItem
+#include "stdafx.h"
+#include "IItem.h"
+
+class INamedItem : public IItem
 {
 public:
-	virtual Name readName(Id itemId) = 0;
-	virtual void writeName(Id itemId, Name name) = 0;
+	Name readName();
+	void writeName(Name name);
 };

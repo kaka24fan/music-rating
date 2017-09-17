@@ -1,4 +1,5 @@
 #include "File.h"
+#include "TypeId.h"
 
 File* File::m_instance = nullptr;
 

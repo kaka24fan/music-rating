@@ -1,6 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
+#include "Author.h"
+#include "TypeRatingVal.h"
 
 static const int MIN_RATING = 1;
 static const int MAX_RATING = 20;
@@ -21,7 +23,7 @@ The map's mapId must be an argument in all interface methods.
 class RatingSimple
 {
 public:
-	//void addNewRating(TypeId mapId, Author author, TypeRatingVal rating); // writes author,(val,emptyVec) into the map owned by this rating item
+	void addNewRating(TypeId mapId, Author author, TypeRatingVal rating); // writes author,(val,emptyVec) into the map owned by this rating item
 	//TypeVector<TypeRatingVal> getRatingsOfAuthor(TypeId mapId, Author author);
 	//TypeVector<Author> getAllAuthors(TypeId mapId);
 	//double getAverageRatingFromAuthor(TypeId mapId, Author author);

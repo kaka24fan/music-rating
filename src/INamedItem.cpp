@@ -1,8 +1,23 @@
-#include "stdafx.h"
+#include "INamedItem.h"
+#include "TypeId.h"
+#include "TypeName.h"
 
-class IItem
+Name INamedItem::readName()
 {
-public:
-	virtual Id readId() = 0;
-	virtual void writeId(Id id) = 0;
-};
+	PageIndex itemPage;
+	if (!File::i()->getPageContainingId(itemPage, TypeId(m_id)))
+	{
+		// Item got constructed but has no page assigned :(
+		assert(false);
+	}
+	Address nameAddress = 0;
+	File::i()->getFirstDataBitOfPage(nameAddress, itemPage);
+	nameAddress += sizeof(Id) * 8;
+	TypeName name{Name()};
+	name.read(nameAddress);
+	return name.getValue();
+}
+
+void INamedItem::writeName(Name name)
+{
+}

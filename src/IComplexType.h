@@ -1,6 +1,8 @@
 #pragma once
 
 #include "stdafx.h"
+#include "IType.h"
+#include "IItem.h"
 
 template<class T>
 class IComplexType

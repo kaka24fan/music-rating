@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "IType.h"
 
 typedef enum itemType
 {

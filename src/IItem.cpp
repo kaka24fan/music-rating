@@ -1,4 +1,5 @@
 #include "IItem.h"
+#include "TypeId.h"
 
 IItem::IItem(Id id)
 {

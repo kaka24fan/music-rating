@@ -3,11 +3,11 @@
 #include "stdafx.h"
 #include "IType.h"
 
-class TypeRatingVal : public IType<RatingVal>
+class TypeName : public IType<Name>
 {
 public:
-	TypeRatingVal(RatingVal val);
-	static TypeRatingVal constructFromAddress(Address a);
+	TypeName(Name val);
+	static TypeName constructFromAddress(Address a);
 
 	// Inherited via IType
 	virtual void writeTerminatorOfMyType(Address a) override;

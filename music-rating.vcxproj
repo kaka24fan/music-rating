@@ -25,27 +25,33 @@
     <ClInclude Include="src\Author.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Globals.h" />
+    <ClInclude Include="src\RatingComplex.h" />
     <ClInclude Include="src\IComplexType.h" />
     <ClInclude Include="src\IItem.h" />
     <ClInclude Include="src\INamedItem.h" />
     <ClInclude Include="src\Macros.h" />
     <ClInclude Include="src\TypeId.h" />
     <ClInclude Include="src\IType.h" />
-    <ClInclude Include="src\Rating.h" />
+    <ClInclude Include="src\RatingSimple.h" />
     <ClInclude Include="src\Song.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\typedefs.h" />
     <ClInclude Include="src\TypeMap.h" />
+    <ClInclude Include="src\TypeName.h" />
     <ClInclude Include="src\TypePair.h" />
     <ClInclude Include="src\TypeRatingVal.h" />
+    <ClInclude Include="src\TypeVector.h" />
     <ClInclude Include="src\User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Assert.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\IItem.cpp" />
+    <ClCompile Include="src\INamedItem.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\RatingSimple.cpp" />
     <ClCompile Include="src\TypeId.cpp" />
+    <ClCompile Include="src\TypeName.cpp" />
     <ClCompile Include="src\TypeRatingVal.cpp" />
   </ItemGroup>
   <ItemGroup>

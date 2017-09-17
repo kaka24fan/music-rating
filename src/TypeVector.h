@@ -4,12 +4,12 @@
 #include "IComplexType.h"
 
 /*
-A zero-terminated sequential map.
-Storage pattern: k1, v1, k2, v2, k3, v3, 0.
+A zero-terminated sequential vector.
+Storage pattern: e1, e2, e3, 0.
 */
-template<class T, class U>
-class TypeMap 
-	: public IComplexType< std::map<T,U> >
+template<class T>
+class TypeVector
+	: public IComplexType< std::vector<T> >
 {
 public:
 	void read(Address a) override;
@@ -25,7 +25,7 @@ public:
 	/*
 	Types of keys and values are supposed to inherit from IType.
 	*/
-	template<class T, class U>
+	template<class T>
 	void read(Address a)
 	{
 		File::i()->seek(a);
@@ -35,7 +35,7 @@ public:
 	/*
 	Types of keys and values are supposed to inherit from IType.
 	*/
-	template<class T, class U>
+	template<class T>
 	void write(Address a)
 	{
 		File::i()->seek(a);
@@ -45,35 +45,34 @@ public:
 	/*
 	Types of keys and values are supposed to inherit from IType.
 	*/
-	template<class T, class U>
+	template<class T>
 	void readHere()
 	{
 		while (true)
 		{
-			IType key = (IType)T();
-			IType val = (IType)U();
+			IType elem = (IType)T();
 
 			Address tmp = File::i()->getNextBitToRW();
-			if (key.isZeroTerminator(tmp)) // terminator
+			if (elem.isZeroTerminator(tmp)) // terminator
 			{
 				break;
 			}
 			File::i()->seek(tmp);
-			key.readHere();
-			val.readHere();
+			elem.readHere();
 
-			m_val.insert(std::pair<T, U>((T)key, (U)val));
+			m_val.push_back(elem);
 		}
 	}
 
-	template<class T, class U>
+
+	template<class T>
 	void writeHere()
 	{
 		TypeId id(m_id);
 		id.writeHere();
 	}
 
-	template<class T, class U>
+	template<class T>
 	void writeFull(Address a)
 	{
 		File::i()->seek(a);
@@ -83,34 +82,32 @@ public:
 	/*
 	Types of keys and values are supposed to inherit from IType.
 	*/
-	template<class T, class U>
+	template<class T>
 	void writeFullHere()
 	{
-		IType& fst = IType{};
-		for (std::pair<T, U> kvp : m_val)
+		IType& elem{};
+		for (T t : m_val)
 		{
-			fst = dynamic_cast<IType&>(kvp.first);
-			IType snd = dynamic_cast<IType&>(kvp.second);
-			fst.writeHere();
-			snd.writeHere();
+			elem = dynamic_cast<IType&>(t);
+			elem.writeHere();
 		}
-		fst.writeTerminatorOfMyTypeHere();
+		elem.writeTerminatorOfMyTypeHere();
 	}
 
-	template<class T, class U>
+	template<class T>
 	void writeTerminatorOfMyType(Address a)
 	{
 		File::i()->seek(a);
 		writeTerminatorOfMyTypeHere();
 	}
 
-	template<class T, class U>
+	template<class T>
 	void writeTerminatorOfMyTypeHere()
 	{
 		TypeId(42).writeTerminatorOfMyTypeHere(); // any TypeId will do because that function does not depend on state (could be static)
 	}
 
-	template<class T, class U>
+	template<class T>
 	bool isZeroTerminator(Address a)
 	{
 		TypeId testId;

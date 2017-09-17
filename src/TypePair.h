@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "IType.h"
 
 template<class T, class U>
 class TypePair : IType< std::pair<T, U> >
@@ -34,7 +35,7 @@ public:
 	template<class T, class U>
 	void writeTerminatorOfMyTypeHere()
 	{
-		IType fst = dynamic_cast<IType>(m_val.first);
+		IType& fst = dynamic_cast<IType&>(m_val.first);
 		fst.writeTerminatorOfMyTypeHere();
 	}
 
@@ -44,7 +45,7 @@ public:
 	template<class T, class U>
 	bool isZeroTerminator(Address a)
 	{
-		IType fst = dynamic_cast<IType>(m_val.first);
+		IType& fst = dynamic_cast<IType&>(m_val.first);
 		return fst.isZeroTerminator(a);
 	}
 
