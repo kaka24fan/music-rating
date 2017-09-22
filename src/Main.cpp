@@ -1,3 +1,7 @@
+/*
+Code written by Jakub (Kuba) Perlin in 2017.
+*/
+
 #include "stdafx.h"
 
 #include <iostream>

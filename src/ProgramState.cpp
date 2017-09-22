@@ -1,3 +1,7 @@
+/*
+Code written by Jakub (Kuba) Perlin in 2017.
+*/
+
 #include "ProgramState.h"
 
 ProgramState* ProgramState::m_instance = nullptr;

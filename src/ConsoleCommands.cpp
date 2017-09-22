@@ -1,3 +1,7 @@
+/*
+Code written by Jakub (Kuba) Perlin in 2017.
+*/
+
 #include "ConsoleCommands.h"
 
 #include "ProgramState.h"
@@ -112,7 +116,7 @@ void execute(std::vector<String> userInput)
 		break;
 	case PC_RATE:
 	{
-		if (!ProgramState::i()->isAnyUserLoggedIn)
+		if (!ProgramState::i()->isAnyUserLoggedIn())
 		{
 			std::wcout << "\nSome user must be logged in to rate an item.";
 			return;
