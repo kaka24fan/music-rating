@@ -110,8 +110,7 @@ public:
 	template<class T>
 	bool isZeroTerminator(Address a)
 	{
-		TypeId testId;
-		testId.constructFromAddress(a);
+		TypeId testId = TypeId::constructFromAddress(a);
 		return testId.isZeroTerminator();
 	}
 

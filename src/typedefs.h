@@ -1,10 +1,14 @@
 #pragma once
 
+#include <string>
+#include <istream>
+#include <ostream>
+
 typedef unsigned char Byte; // 8 bits
 
 //stores MinutesSince1970Epoch in the most significant 32 bits 
 //and the rating in the least significant 6 bits (0, 0.5, 1, ..., 20 <-> 41 possibilities)
-typedef uint64_t RatingVal; // 64 bits
+typedef uint64_t RatingData; // 64 bits
 
 typedef unsigned int Id; // 32 bits
 
@@ -12,77 +16,11 @@ typedef unsigned int Address; // 32 bits
 
 typedef unsigned int PageIndex; // 32 bits
 
-typedef char32_t Char; // 32 bits
+typedef wchar_t Char; // implementation specific - 16/32 bits?
 
-typedef std::u32string Name;
+typedef std::basic_string<Char> String;
 
-/*
-class RatingVal
-{
-public:
-	RatingVal(unsigned char x);
-	unsigned char x;
+typedef String Name;
 
-private:
-};
-
-class Byte
-{
-public:
-	Byte(unsigned char x);
-	unsigned char x;
-
-private:
-	
-};
-
-class Id
-{
-public:
-	Id(unsigned short x);
-	unsigned short x;
-
-private:
-	
-};
-
-class Char
-{
-public:
-	Char(char32_t x);
-	char32_t x;
-
-private:
-	
-};
-
-class Address
-{
-public:
-	Address(unsigned int x);
-	unsigned int x;
-
-private:
-	
-};
-
-class PageIndex
-{
-public:
-	PageIndex(Address a);
-	PageIndex(unsigned int a);
-	unsigned int x;
-
-private:
-	
-};
-
-class Name
-{
-public:
-	Name(std::string x);
-	std::string str;
-
-private:
-};
-*/
+//typedef std::basic_istream<Char, std::char_traits<Char> > Cin;
+//typedef std::basic_ostream<Char, std::char_traits<Char> > Cout;

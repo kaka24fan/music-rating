@@ -20,7 +20,7 @@
 #include "IComplexType.h"
 #include "TypeId.h"
 #include "TypeName.h"
-#include "TypeRatingVal.h"
+#include "TypeRatingData.h"
 #include "TypePair.h"
 #include "TypeMap.h"
 #include "TypeVector.h"

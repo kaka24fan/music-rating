@@ -1,7 +1,3 @@
-#pragma at-least-once
+﻿#pragma at-least-once-dude-come-on
 
-
-Try writing interface for RatingComplex
-Duplicate TypeMap and tweak to get TypeVector
-Write a static 'rating factory' which will gen timestamp and clamp rating values.
-Rename RatingVal to RatingData?
+Test what happens when you make the console read in "abcd ąęćż"

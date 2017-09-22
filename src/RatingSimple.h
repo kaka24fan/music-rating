@@ -2,10 +2,8 @@
 
 #include "stdafx.h"
 #include "Author.h"
-#include "TypeRatingVal.h"
-
-static const int MIN_RATING = 1;
-static const int MAX_RATING = 20;
+#include "TypeRatingData.h"
+#include "TypeVector.h"
 
 /*
 A SimpleRating is identified with a map:
@@ -17,14 +15,18 @@ as an album is just one thing to rate with additional pointers
 to independently rated things (songs).
 The vectorness represents change over time.
 
+SimpleRating is logically strictly contained in ComplexRating, thus
+the interface for the latter will inherit from here and override all methods.
+
 The following is just an interface to operate on these SimpleRating-maps.
 The map's mapId must be an argument in all interface methods.
 */
 class RatingSimple
 {
 public:
-	void addNewRating(TypeId mapId, Author author, TypeRatingVal rating); // writes author,(val,emptyVec) into the map owned by this rating item
-	//TypeVector<TypeRatingVal> getRatingsOfAuthor(TypeId mapId, Author author);
-	//TypeVector<Author> getAllAuthors(TypeId mapId);
-	//double getAverageRatingFromAuthor(TypeId mapId, Author author);
+	virtual void addNewRating(TypeId mapId, Author author, TypeRatingData rating); // writes author,(val,emptyVec) into the map owned by this rating item
+	virtual TypeVector<TypeRatingData> getRatingsOfAuthor(TypeId mapId, Author author);
+	virtual TypeVector<Author> getAllAuthors(TypeId mapId);
+	virtual double getAverageRatingFromAuthor(TypeId mapId, Author author);
+	virtual void deleteRating(TypeId mapId, Author author, unsigned int indexInVector);
 };

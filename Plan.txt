@@ -1,8 +1,28 @@
+Commands to be supported:
 
--- TO DO:
+help *lists what's below*
+
+create artist/song/album/user *console asks for fields one by one (asking for variable number of fields easy, just "press enter twice to finish" or sth)*
+
+addTo song/album
+removeFrom song/album
+
+login *asks for username*
+
+rate album/artist/song/performer *must be logged in to do this*
+
+delete song (title)
+> did you mean this song? *lists the details* *expects a y/n*
+
+rate song 16
+rate performance (title) (artist) (role)
+
+-- WORTH DOING:
 
 + Some guarantees about whether reads/writes may move the file pointer or not
 + Currently you can't run out of your item's last page by repeating readNext() but can run out of item within the last page.
+
+--
 
 IItem:
  IItem(Id)

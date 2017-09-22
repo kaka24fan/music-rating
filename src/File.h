@@ -3,6 +3,7 @@
 #include "stdafx.h"
 
 class TypeId;
+class TypeName;
 
 class File
 {
@@ -32,6 +33,8 @@ public:
 	void initializePage(PageIndex pageIndex, Id id);
 
 	bool getFirstDataBitOfPage(Address& result, PageIndex pageIndex);
+
+	TypeId findItemWithName(String name, unsigned int maxStringDist);
 	
 	static File* i();
 
@@ -46,6 +49,7 @@ private:
 	bool isPageFree(PageIndex index);
 	bool isPageAFirstPage(PageIndex index);
 	TypeId readPageItemId(PageIndex index);
+	TypeName readPageItemName(PageIndex index);
 	bool isAddressInsidePageData(Address a);
 	bool getContinuationPage(PageIndex& result, PageIndex pageIndex);
 	void setContinuationPagePointer(PageIndex origin, PageIndex continuation);

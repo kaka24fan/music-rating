@@ -3,23 +3,10 @@
 #include "stdafx.h"
 #include "IType.h"
 
-typedef enum itemType
-{
-	// DON'T USE 0!
-	IT_VEC = 1,
-	IT_MAP = 2,
-	IT_AUTHOR = 3,
-	IT_ALBUM = 4,
-	IT_ARTIST = 5,
-	IT_SONG = 6,
-	IT_SIMPLERATING = 7,
-	IT_COMPOSITERATING = 8,
-} ItemType;
-
 /*
 4 bits of ItemType, 24 bits of pure id, 4 bits of flags
 */
-class TypeId : IType< Id >
+class TypeId : public IType< Id >
 {
 public:
 	TypeId(Id id);

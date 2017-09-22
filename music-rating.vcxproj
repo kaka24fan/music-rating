@@ -23,8 +23,11 @@
     <ClInclude Include="src\Artist.h" />
     <ClInclude Include="src\Assert.h" />
     <ClInclude Include="src\Author.h" />
+    <ClInclude Include="src\ConsoleCommands.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Globals.h" />
+    <ClInclude Include="src\ProgramState.h" />
+    <ClInclude Include="src\stringutils.h" />
     <ClInclude Include="src\RatingComplex.h" />
     <ClInclude Include="src\IComplexType.h" />
     <ClInclude Include="src\IItem.h" />
@@ -39,20 +42,23 @@
     <ClInclude Include="src\TypeMap.h" />
     <ClInclude Include="src\TypeName.h" />
     <ClInclude Include="src\TypePair.h" />
-    <ClInclude Include="src\TypeRatingVal.h" />
+    <ClInclude Include="src\TypeRatingData.h" />
     <ClInclude Include="src\TypeVector.h" />
     <ClInclude Include="src\User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Assert.cpp" />
+    <ClCompile Include="src\ConsoleCommands.cpp" />
     <ClCompile Include="src\File.cpp" />
     <ClCompile Include="src\IItem.cpp" />
     <ClCompile Include="src\INamedItem.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\ProgramState.cpp" />
     <ClCompile Include="src\RatingSimple.cpp" />
+    <ClCompile Include="src\stringutils.cpp" />
     <ClCompile Include="src\TypeId.cpp" />
     <ClCompile Include="src\TypeName.cpp" />
-    <ClCompile Include="src\TypeRatingVal.cpp" />
+    <ClCompile Include="src\TypeRatingData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Plan.txt" />

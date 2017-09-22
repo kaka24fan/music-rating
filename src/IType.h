@@ -2,6 +2,19 @@
 
 #include "stdafx.h"
 
+typedef enum itemType
+{
+	IT_INVALID = 0,
+	IT_VEC = 1,
+	IT_MAP = 2,
+	IT_USER = 3,
+	IT_ALBUM = 4,
+	IT_ARTIST = 5,
+	IT_SONG = 6,
+	IT_SIMPLERATING = 7,
+	IT_COMPOSITERATING = 8,
+} ItemType;
+
 template <class T>
 class IType
 {

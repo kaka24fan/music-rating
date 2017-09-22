@@ -1,5 +1,8 @@
 #include "File.h"
+
 #include "TypeId.h"
+#include "TypeName.h"
+#include "stringutils.h"
 
 File* File::m_instance = nullptr;
 
@@ -137,6 +140,36 @@ bool File::getFirstDataBitOfPage(Address& result, PageIndex pageIndex)
 		result = pageStart + 2;
 		return true;
 	}
+}
+
+TypeId File::findItemWithName(String name, unsigned int maxStringDist)
+{
+	PageIndex pageIndex = 0;
+	while (true)
+	{
+		pageIndex++;
+		if (!isPageAFirstPage(pageIndex))
+			continue;
+		
+		TypeId itemId = readPageItemId(pageIndex);
+		ItemType itemType = itemId.getItemType();
+		if (itemType != IT_ALBUM &&
+			itemType != IT_ARTIST &&
+			itemType != IT_SONG &&
+			itemType != IT_USER)
+		{
+			continue;
+		}
+		
+		TypeName itemName = readPageItemName(pageIndex);
+		Name itemName_ = itemName.getValue();
+
+		if (StringDistance(itemName_, name) <= maxStringDist)
+		{
+			return itemId;
+		}
+	}
+	return TypeId(0);
 }
 
 /*
@@ -339,5 +372,13 @@ TypeId File::readPageItemId(PageIndex index)
 	assert(isPageAFirstPage(index));
 	Address pageStart = index >> LOG2_OF_PAGE_SIZE_IN_BITS;
 	TypeId result = TypeId::constructFromAddress(pageStart + 2);
+	return result;
+}
+
+TypeName File::readPageItemName(PageIndex index)
+{
+	assert(isPageAFirstPage(index));
+	Address pageStart = index >> LOG2_OF_PAGE_SIZE_IN_BITS;
+	TypeName result = TypeName::constructFromAddress(pageStart + 2 + sizeof(Id)*8);
 	return result;
 }

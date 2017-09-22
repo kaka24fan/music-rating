@@ -51,7 +51,7 @@ void TypeName::write(Address a)
 
 void TypeName::readHere()
 {
-	Name val = std::u32string();
+	Name val = String();
 	while (true)
 	{
 		Char nextChar = 0;

@@ -1,16 +1,35 @@
 #include "stdafx.h"
 
+#include <iostream>
+#include <string>
+
+#include "stringutils.h"
+#include "ConsoleCommands.h"
+#include <windows.h>
+
+#include "TypeId.h"
+
+
+
 int main(int argc, char *argv[])
 {
+	// SETUP ----------------------------------------------------------------------------------------------------------
+	SetConsoleCP(852); // enables Polish characters
+	
+	// STATE ----------------------------------------------------------------------------------------------------------
+	String lineOfInput;
+
+	// MAIN LOOP ------------------------------------------------------------------------------------------------------
 	while (true)
 	{
-		// read user input
+		std::getline(std::wcin, lineOfInput);
+		for (auto ch : lineOfInput)
+		{
+			std::wcout << (int)ch << std::endl;
+		}
 
-		// parse user input
+		std::vector<String> splitResult = split(lineOfInput, L' ');
 
-		// execute command
-
-		break;
+		execute(splitResult);
 	}
-	return 1;
 }

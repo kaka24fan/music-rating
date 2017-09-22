@@ -3,11 +3,17 @@
 #include "stdafx.h"
 #include "IType.h"
 
-class TypeRatingVal : public IType<RatingVal>
+#include <ctime>
+
+static const int MIN_RATING = 0;
+static const int MAX_RATING = 40;
+
+class TypeRatingData : public IType<RatingData>
 {
 public:
-	TypeRatingVal(RatingVal val);
-	static TypeRatingVal constructFromAddress(Address a);
+	TypeRatingData(RatingData val);
+	static TypeRatingData constructFromAddress(Address a);
+	static TypeRatingData construct(unsigned short score);
 
 	// Inherited via IType
 	virtual void writeTerminatorOfMyType(Address a) override;
