@@ -57,11 +57,13 @@ void TypeId::writeHere()
 	}
 }
 
-Byte TypeId::getFlags()
+FlagType TypeId::getFlags()
 {	
-	Byte result(m_val);
+	unsigned int result = (unsigned int)m_val;
 	result &= 15;
-	return result;
+
+	assert(result < 4);
+	return (FlagType)result;
 }
 
 ItemType TypeId::getItemType()
@@ -69,6 +71,31 @@ ItemType TypeId::getItemType()
 	return ItemType(m_val >> 28);
 }
 
+TypeId TypeId::getRawId()
+{
+	TypeId result = TypeId(m_val);
+	result.setFlags((FlagType)0);
+	result.setItemType((ItemType)0);
+	return result;
+}
+
+void TypeId::setItemType(ItemType itemType)
+{
+	unsigned int bits = (unsigned int)itemType;
+	m_val &= ~((~0) << 28); // clear the 4 most significant bits
+	m_val |= (bits << 28); // overwrite them with the item type
+}
+
+void TypeId::setFlags(FlagType flags)
+{
+	unsigned int bits = (unsigned int)flags;
+	m_val = (m_val >> 4) << 4; // clear the 4 least significant bits
+	m_val |= bits; // overwrite them with the flags
+}
+
+/*
+Does not compare the flags, but compares everything else.
+*/
 bool TypeId::equalityCheck(TypeId id1, TypeId id2)
 {
 	return (id1.m_val >> 4) == (id2.m_val >> 4);

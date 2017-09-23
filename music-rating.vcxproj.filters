@@ -60,9 +60,6 @@
     <ClInclude Include="src\INamedItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Author.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\TypeMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>

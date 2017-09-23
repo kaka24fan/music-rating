@@ -19,6 +19,16 @@ typedef enum itemType
 	IT_COMPOSITERATING = 8,
 } ItemType;
 
+// Currently there is a check in TypeId::getFlags() to see if the cast is done on something in range...
+// Do something better?
+typedef enum flagType
+{
+	FT_INVALID = 0,
+	FT_LEAD = 1,
+	FT_FEATURING = 2,
+	FT_PRODUCER = 3,
+} FlagType;
+
 template <class T>
 class IType
 {

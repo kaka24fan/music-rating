@@ -14,6 +14,7 @@ public:
 	void logUserOut();
 	void logUserIn(TypeId userId);
 	bool isAnyUserLoggedIn();
+	TypeId generateId(ItemType type);
 
 	static ProgramState* i();
 
@@ -22,4 +23,5 @@ private:
 	ProgramState();
 
 	TypeId m_activeUserId;
+	TypeId m_nextId;
 };

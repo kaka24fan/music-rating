@@ -102,26 +102,49 @@ Sets the valid bit and clears all other bits of the page.
 */
 void File::initializePage(PageIndex pageIndex)
 {
-	Address pageStart = pageIndex << LOG2_OF_PAGE_SIZE_IN_BITS;
-	writeBit(pageStart, true);
-	for (unsigned int i = 1; i < (1 << LOG2_OF_PAGE_SIZE_IN_BITS); i++)
-		writeBit(pageStart + i, false);
+	if (pageIndex > getLastUsedPageIndex() + 1)
+	{
+		assert(false); // why would you skip a page?
+	}
+	else if (pageIndex == getLastUsedPageIndex() + 1) // we have to append a new page
+	{
+		// TODO
+		// need something like 
+		// void appendAlignedByte(Byte data);
+		// Ahhh I guess I should switch to storing the Bytes in a std::vector and it'll be easy! <---------------------------------
+	}
+	else
+	{
+		Address pageStart = pageIndex << LOG2_OF_PAGE_SIZE_IN_BITS;
+		writeBit(pageStart, true);
+		for (unsigned int i = 1; i < (1 << LOG2_OF_PAGE_SIZE_IN_BITS); i++)
+		{
+			writeBit(pageStart + i, false);
+		}
+	}
 }
 
 /*
 Sets the valid bit and the owner id, clears all other bits of the page.
 */
-void File::initializePage(PageIndex pageIndex, Id id)
+void File::initializePage(PageIndex pageIndex, TypeId id)
 {
 	initializePage(pageIndex);
 	Address lastBitOfId;
 	getFirstDataBitOfPage(lastBitOfId, pageIndex);
-	lastBitOfId--; // after this line, variable's content matches the name
+	lastBitOfId--; // after this line, variable's content matches the name lastBitOfId
+
+	Id idVal = id.getValue();
 	for (unsigned int i = 0; i < sizeof(Id) * 8; i++)
 	{
-		writeBit(lastBitOfId--, (id & 1));
-		id >>= 1;
+		writeBit(lastBitOfId--, (idVal & 1));
+		idVal >>= 1;
 	}
+}
+
+PageIndex File::getLastUsedPageIndex()
+{
+	return (m_bitCount / (1 << LOG2_OF_PAGE_SIZE_IN_BITS)) - 1;
 }
 
 /*

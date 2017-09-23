@@ -103,16 +103,18 @@ void execute(std::vector<String> userInput)
 		{
 			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only create one of the following: Album, Artist, Song, User.";
 		}
+
+
 	}
 		break;
 	case PC_DELETE:
-		std::wcout << "\nHelp hasn't been implemented yet. Help yourself.";
+		std::wcout << "\nDelete hasn't been implemented yet. Help yourself.";
 		break;
 	case PC_ADD:
-		std::wcout << "\nHelp hasn't been implemented yet. Help yourself.";
+		std::wcout << "\nAdd hasn't been implemented yet. Help yourself.";
 		break;
 	case PC_REMOVE:
-		std::wcout << "\nHelp hasn't been implemented yet. Help yourself.";
+		std::wcout << "\nRemove hasn't been implemented yet. Help yourself.";
 		break;
 	case PC_RATE:
 	{

@@ -1,3 +1,7 @@
 ﻿#pragma at-least-once-dude-come-on
 
-Test what happens when you make the console read in "abcd ąęćż"
+
+		// TODO
+		// need something like 
+		// void appendAlignedByte(Byte data);
+		// Ahhh I guess I should switch to storing the Bytes in a std::vector and it'll be easy! <---------------------------------

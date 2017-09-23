@@ -10,6 +10,6 @@ Code written by Jakub (Kuba) Perlin in 2017.
 class INamedItem : public IItem
 {
 public:
-	Name readName();
-	void writeName(Name name);
+	Name readName(TypeId thisItemId);
+	void writeName(TypeId thisItemId, Name name);
 };

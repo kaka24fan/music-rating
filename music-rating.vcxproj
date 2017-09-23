@@ -22,7 +22,6 @@
     <ClInclude Include="src\Album.h" />
     <ClInclude Include="src\Artist.h" />
     <ClInclude Include="src\Assert.h" />
-    <ClInclude Include="src\Author.h" />
     <ClInclude Include="src\ConsoleCommands.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Globals.h" />

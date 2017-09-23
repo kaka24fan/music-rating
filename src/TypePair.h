@@ -8,7 +8,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "IType.h"
 
 template<class T, class U>
-class TypePair : IType< std::pair<T, U> >
+class TypePair : public IType< std::pair<T, U> >
 {
 public:
 	// Inherited via IType

@@ -25,15 +25,23 @@ The map's mapId must be an argument in all interface methods.
 class RatingComplex : public RatingSimple
 {
 public:
-	void addNewMinorRating(TypeId mapId, Author author, TypeId minorId, TypeRatingData rating);
-	// analogs of the ones below...
+	// minor analogs of the ones from RatingSimple:
+	void addNewMinorRating(TypeId mapId, TypeId minorId, Author author, TypeRatingData rating);
+	void deleteMinorRating(TypeId mapId, TypeId minorId, Author author, unsigned int indexInVector);
+
+	TypeRatingData getLastMinorRatingByAuthor(TypeId mapId, TypeId minorId, Author author);
+	TypeVector<TypeRatingData> getMinorRatingsByAuthor(TypeId mapId, TypeId minorId, Author author);
+	double getAverageMinorRatingFromAuthor(TypeId mapId, TypeId minorId, Author author);
 
 	// inherited from RatingSimple:
 	void addNewRating(TypeId mapId, Author author, TypeRatingData rating) override; // writes author,(val,emptyVec) into the map owned by this rating item
-	TypeVector<TypeRatingData> getRatingsOfAuthor(TypeId mapId, Author author) override;
+
+	void deleteRating(TypeId mapId, Author author, unsigned int indexInVector) override;
+
+	TypeRatingData getLastRatingByAuthor(TypeId mapId, Author author) override;
+	TypeVector<TypeRatingData> getRatingsByAuthor(TypeId mapId, Author author) override;
 	TypeVector<Author> getAllAuthors(TypeId mapId) override;
 	double getAverageRatingFromAuthor(TypeId mapId, Author author) override;
-	void deleteRating(TypeId mapId, Author author, unsigned int indexInVector) override;
 
 private:
 

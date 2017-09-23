@@ -12,6 +12,7 @@ class TypeName;
 class File
 {
 public:
+
 	void writeBit(Address a, bool bit);
 	bool readBit(Address a);
 
@@ -34,9 +35,13 @@ public:
 	
 	void invalidatePage(PageIndex pageIndex);
 	void initializePage(PageIndex pageIndex);
-	void initializePage(PageIndex pageIndex, Id id);
+	void initializePage(PageIndex pageIndex, TypeId id);
+
+	PageIndex getLastUsedPageIndex();
 
 	bool getFirstDataBitOfPage(Address& result, PageIndex pageIndex);
+	bool isPageAFirstPage(PageIndex index);
+	TypeId readPageItemId(PageIndex index);
 
 	TypeId findItemWithName(String name, unsigned int maxStringDist);
 	
@@ -51,8 +56,6 @@ private:
 	Address m_nextBitToRW = 0;
 
 	bool isPageFree(PageIndex index);
-	bool isPageAFirstPage(PageIndex index);
-	TypeId readPageItemId(PageIndex index);
 	TypeName readPageItemName(PageIndex index);
 	bool isAddressInsidePageData(Address a);
 	bool getContinuationPage(PageIndex& result, PageIndex pageIndex);

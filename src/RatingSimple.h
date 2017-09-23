@@ -5,7 +5,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #pragma once
 
 #include "stdafx.h"
-#include "Author.h"
+#include "User.h"
 #include "TypeRatingData.h"
 #include "TypeVector.h"
 
@@ -28,9 +28,12 @@ The map's mapId must be an argument in all interface methods.
 class RatingSimple
 {
 public:
-	virtual void addNewRating(TypeId mapId, Author author, TypeRatingData rating); // writes author,(val,emptyVec) into the map owned by this rating item
-	virtual TypeVector<TypeRatingData> getRatingsOfAuthor(TypeId mapId, Author author);
-	virtual TypeVector<Author> getAllAuthors(TypeId mapId);
-	virtual double getAverageRatingFromAuthor(TypeId mapId, Author author);
-	virtual void deleteRating(TypeId mapId, Author author, unsigned int indexInVector);
+	virtual void addNewRating(TypeId mapId, TypeId userId, TypeRatingData rating); // writes author,(val,emptyVec) into the map owned by this rating item
+	
+	virtual void deleteRating(TypeId mapId, TypeId userId, unsigned int indexInVector);
+	
+	virtual TypeRatingData getLastRatingByAuthor(TypeId mapId, TypeId userId);
+	virtual TypeVector<TypeRatingData> getRatingsByAuthor(TypeId mapId, TypeId userId);
+	virtual TypeVector<User> getAllUsers(TypeId mapId); // all users who authored at least one rating here
+	virtual double getAverageRatingFromAuthor(TypeId mapId, TypeId userId);
 };

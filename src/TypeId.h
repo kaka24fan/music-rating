@@ -16,8 +16,14 @@ public:
 	TypeId(Id id);
 	static TypeId constructFromAddress(Address a);
 
-	Byte getFlags();
+	FlagType getFlags();
 	ItemType getItemType();
+	
+	// Gets the id with flags and itemtype cleared to zero.
+	TypeId getRawId();
+
+	void setItemType(ItemType itemType);
+	void setFlags(FlagType flags);
 	
 	static bool equalityCheck(TypeId id1, TypeId id2);
 

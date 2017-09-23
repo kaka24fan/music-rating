@@ -6,10 +6,10 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "TypeId.h"
 #include "TypeName.h"
 
-Name INamedItem::readName()
+Name INamedItem::readName(TypeId thisItemId)
 {
 	PageIndex itemPage;
-	if (!File::i()->getPageContainingId(itemPage, TypeId(m_id)))
+	if (!File::i()->getPageContainingId(itemPage, TypeId(thisItemId)))
 	{
 		// Item got constructed but has no page assigned :(
 		assert(false);
@@ -22,6 +22,7 @@ Name INamedItem::readName()
 	return name.getValue();
 }
 
-void INamedItem::writeName(Name name)
+void INamedItem::writeName(TypeId thisItemId, Name name)
 {
+	// TODO
 }
