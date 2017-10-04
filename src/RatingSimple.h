@@ -8,6 +8,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "User.h"
 #include "TypeRatingData.h"
 #include "TypeVector.h"
+#include "TypeId.h"
 
 /*
 A SimpleRating is identified with a map:

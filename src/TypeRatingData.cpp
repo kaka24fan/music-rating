@@ -3,6 +3,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 */
 
 #include "TypeRatingData.h"
+#include "File.h"
 
 TypeRatingData::TypeRatingData(RatingData val)
 {

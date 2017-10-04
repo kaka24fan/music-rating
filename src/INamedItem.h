@@ -7,6 +7,8 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "stdafx.h"
 #include "IItem.h"
 
+class TypeId;
+
 class INamedItem : public IItem
 {
 public:

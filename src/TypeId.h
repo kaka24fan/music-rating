@@ -6,6 +6,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 #include "stdafx.h"
 #include "IType.h"
+#include "File.h"
 
 /*
 4 bits of ItemType, 24 bits of pure id, 4 bits of flags

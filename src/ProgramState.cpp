@@ -3,6 +3,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 */
 
 #include "ProgramState.h"
+#include "File.h"
 
 ProgramState* ProgramState::m_instance = nullptr;
 

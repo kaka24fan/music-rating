@@ -60,11 +60,9 @@ void File::writeNextBit(bool bit)
 			setContinuationPagePointer(currPage, nextPage);
 			initializePage(nextPage);
 		}
-		if (!getFirstDataBitOfPage(nextPage, m_nextBitToRW))
-		{
-			// That's supposed to be impossible - "nextPage" should not be free if we picked it to be the next page.
-			assert(false);
-		}
+
+		// This assert is supposed to be impossible to fail - "nextPage" should not be free if we picked it to be the next page.
+		assert(getFirstDataBitOfPage(nextPage, m_nextBitToRW));
 	}
 }
 
@@ -86,10 +84,7 @@ bool File::readNextBit(bool& result)
 		if (getContinuationPage(nextPage, currPage))
 		{
 			bool firstDataBitOfNextPage = false;
-			if (!getFirstDataBitOfPage(nextPage, firstDataBitOfNextPage))
-			{
-				assert(false);
-			}
+			assert(getFirstDataBitOfPage(nextPage, firstDataBitOfNextPage));
 			m_nextBitToRW = firstDataBitOfNextPage;
 		}
 		// otherwise leave the m_nextBitToRW outside of data bits and the next read will fail

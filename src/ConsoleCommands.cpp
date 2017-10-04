@@ -8,6 +8,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "stringutils.h"
 
 #include "User.h"
+#include "File.h"
 
 #include <iostream>
 
@@ -102,60 +103,40 @@ void execute(std::vector<String> userInput)
 		Name itemNameStr = userInput.at(2);
 
 		ItemType itemType = GetItemTypeFromStringApprox(itemTypeStr);
-		switch (itemType)
-		{
-		case IT_ALBUM:
-		{
-			TypeId newId = ProgramState::i()->generateId(ItemType::IT_ALBUM);
-			IItem::assignAddress(newId);
-			INamedItem::writeName(newId, itemNameStr);
-			//TODO
-		}
-		break;
-		case IT_ARTIST:
-		{
-			TypeId newId = ProgramState::i()->generateId(ItemType::IT_ARTIST);
-			IItem::assignAddress(newId);
-			INamedItem::writeName(newId, itemNameStr);
-			//TODO
-		}
-		break;
-		case IT_SONG:
-		{
-			TypeId newId = ProgramState::i()->generateId(ItemType::IT_SONG);
-			IItem::assignAddress(newId);
-			INamedItem::writeName(newId, itemNameStr);
-			//TODO
-		}
-		break;
-		case IT_USER:
-		{
-			TypeId newId = ProgramState::i()->generateId(ItemType::IT_USER);
-			IItem::assignAddress(newId);
-			INamedItem::writeName(newId, itemNameStr);
-			//TODO
-		}
-		break;
-		case IT_INVALID:
+
+		if (itemType != IT_ALBUM
+			&& itemType != IT_ARTIST
+			&& itemType != IT_SONG
+			&& itemType != IT_USER)
 		{
 			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only create one of the following: Album, Artist, Song, User.";
 		}
-		break;
-		default:
+		else
 		{
-			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only create one of the following: Album, Artist, Song, User.";
+			if (File::i()->findItemWithNameAndItemType(itemNameStr, itemType, 0).getValue() != 0)
+			{
+				String itemTypeStr = itemTypeToString(itemType);
+				std::wcout << "\nThere already exists a " << itemTypeStr << "with name " << itemNameStr << ". Pick a different name";
+				break;
+			}
+			else
+			{
+				TypeId newId = ProgramState::i()->generateId(itemType);
+				IItem::assignAddress(newId);
+				INamedItem::writeName(newId, itemNameStr);
+			}
 		}
-		break;
-		}
-
-
+		// DONE.
 	}
 		break;
 	case PC_DELETE:
 		std::wcout << "\nDelete hasn't been implemented yet. Help yourself.";
 		break;
-	case PC_ADD:
-		std::wcout << "\nAdd hasn't been implemented yet. Help yourself.";
+	case PC_ADDTO: // AddTo Song "Kamienie i mury" Producer "Zeus"
+	{
+		std::wcout << "\nAddTo hasn't been implemented yet. Help yourself.";
+		// TODO: prepare a general dialog system which allows to write out and then wait for user input.
+	}
 		break;
 	case PC_REMOVE:
 		std::wcout << "\nRemove hasn't been implemented yet. Help yourself.";

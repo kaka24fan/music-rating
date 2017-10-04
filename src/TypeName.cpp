@@ -3,6 +3,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 */
 
 #include "TypeName.h"
+#include "File.h"
 
 TypeName::TypeName(Name val)
 {

@@ -17,7 +17,7 @@ typedef enum primaryCommand
 	PC_LOGIN,
 	PC_CREATE,
 	PC_DELETE,
-	PC_ADD,
+	PC_ADDTO,
 	PC_REMOVE,
 	PC_RATE,
 } PrimaryCommand;
@@ -38,7 +38,7 @@ static std::map<PrimaryCommand, String> PCToString =
 	{ PC_LOGIN,				String(L"login") },
 	{ PC_CREATE,			String(L"create") },
 	{ PC_DELETE,			String(L"delete") },
-	{ PC_ADD,				String(L"add") },
+	{ PC_ADDTO,				String(L"addto") },
 	{ PC_REMOVE,			String(L"remove") },
 	{ PC_RATE,				String(L"rate") },
 };

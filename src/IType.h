@@ -16,7 +16,7 @@ typedef enum itemType
 	IT_ARTIST = 5,
 	IT_SONG = 6,
 	IT_SIMPLERATING = 7,
-	IT_COMPOSITERATING = 8,
+	IT_COMPLEXRATING = 8,
 } ItemType;
 
 // Currently there is a check in TypeId::getFlags() to see if the cast is done on something in range...
@@ -28,6 +28,35 @@ typedef enum flagType
 	FT_FEATURING = 2,
 	FT_PRODUCER = 3,
 } FlagType;
+
+// Can't define a static function in the .cpp
+// And if I make it not static there is a multiple definition error that I couldn't solve quickly
+static String itemTypeToString(ItemType itemType)
+{
+	switch (itemType)
+	{
+	case IT_INVALID:
+		return String(L"Invalid ItemType");
+	case IT_VEC:
+		return String(L"Vector");
+	case IT_MAP:
+		return String(L"Map");
+	case IT_USER:
+		return String(L"User");
+	case IT_ALBUM:
+		return String(L"Album");
+	case IT_ARTIST:
+		return String(L"Artist");
+	case IT_SONG:
+		return String(L"Song");
+	case IT_SIMPLERATING:
+		return String(L"Simple Rating");
+	case IT_COMPLEXRATING:
+		return String(L"Complex Rating");
+	default:
+		return String(L"Very Invalid ItemType");
+	}
+}
 
 template <class T>
 class IType
