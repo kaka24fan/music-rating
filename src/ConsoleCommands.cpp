@@ -7,9 +7,11 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "ProgramState.h"
 #include "stringutils.h"
 
+#include "User.h"
+
 #include <iostream>
 
-PrimaryCommand GetPrimaryCommand(String approximation)
+PrimaryCommand GetPrimaryCommandFromStringApprox(String approximation)
 {
 	for (auto kvp : PCToString)
 	{
@@ -19,7 +21,7 @@ PrimaryCommand GetPrimaryCommand(String approximation)
 	return PC_INVALIDCOMMAND;
 }
 
-SecondaryCommand GetSecondaryCommand(String approximation)
+SecondaryCommand GetSecondaryCommandFromStringApprox(String approximation)
 {
 	for (auto kvp : SCToString)
 	{
@@ -32,7 +34,7 @@ SecondaryCommand GetSecondaryCommand(String approximation)
 /*
 Only valid item types this function may return are Album, Artist, Song, User.
  */
-ItemType GetItemType(String approximation)
+ItemType GetItemTypeFromStringApprox(String approximation)
 {
 	for (auto kvp : ITToString)
 	{
@@ -67,7 +69,7 @@ void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput)
 
 void execute(std::vector<String> userInput)
 {
-	PrimaryCommand pc = GetPrimaryCommand(userInput.at(0));
+	PrimaryCommand pc = GetPrimaryCommandFromStringApprox(userInput.at(0));
 	checkNumOfParams(pc, userInput);
 
 	switch (pc)
@@ -81,7 +83,7 @@ void execute(std::vector<String> userInput)
 	case PC_LOGIN:
 	{
 		String userName = userInput.at(1);
-		TypeId userId = File::i()->findItemWithName(userName, 0);
+		TypeId userId = File::i()->findItemWithNameAndItemType(userName, ItemType::IT_USER, 0);
 		if (userId.getValue() == 0)
 		{
 			std::wcout << "\nThere's no user \'" << userName << "\'. Try again or type in \'help\' for a list of available commands.";
@@ -91,6 +93,7 @@ void execute(std::vector<String> userInput)
 			ProgramState::i()->logUserIn(userId);
 			std::wcout << "\nLogin successful.";
 		}
+		// DONE.
 	}
 		break;
 	case PC_CREATE:
@@ -98,10 +101,51 @@ void execute(std::vector<String> userInput)
 		String itemTypeStr = userInput.at(1);
 		Name itemNameStr = userInput.at(2);
 
-		ItemType itemType = GetItemType(itemTypeStr);
-		if (itemType == IT_INVALID)
+		ItemType itemType = GetItemTypeFromStringApprox(itemTypeStr);
+		switch (itemType)
+		{
+		case IT_ALBUM:
+		{
+			TypeId newId = ProgramState::i()->generateId(ItemType::IT_ALBUM);
+			IItem::assignAddress(newId);
+			INamedItem::writeName(newId, itemNameStr);
+			//TODO
+		}
+		break;
+		case IT_ARTIST:
+		{
+			TypeId newId = ProgramState::i()->generateId(ItemType::IT_ARTIST);
+			IItem::assignAddress(newId);
+			INamedItem::writeName(newId, itemNameStr);
+			//TODO
+		}
+		break;
+		case IT_SONG:
+		{
+			TypeId newId = ProgramState::i()->generateId(ItemType::IT_SONG);
+			IItem::assignAddress(newId);
+			INamedItem::writeName(newId, itemNameStr);
+			//TODO
+		}
+		break;
+		case IT_USER:
+		{
+			TypeId newId = ProgramState::i()->generateId(ItemType::IT_USER);
+			IItem::assignAddress(newId);
+			INamedItem::writeName(newId, itemNameStr);
+			//TODO
+		}
+		break;
+		case IT_INVALID:
 		{
 			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only create one of the following: Album, Artist, Song, User.";
+		}
+		break;
+		default:
+		{
+			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only create one of the following: Album, Artist, Song, User.";
+		}
+		break;
 		}
 
 

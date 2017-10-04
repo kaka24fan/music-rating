@@ -13,7 +13,7 @@ class IItem
 {
 public:
 	IItem() = delete;
-	void assignAddress(TypeId thisItemId);
+	static void assignAddress(TypeId thisItemId);
 
 private:
 };

@@ -10,9 +10,23 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 File* File::m_instance = nullptr;
 
+void File::appendNewByte(Byte b)
+{
+	m_bytes.push_back(b);
+}
+
+void File::appendNewPage()
+{
+	unsigned int pageSizeInBytes = (1 << LOG2_OF_PAGE_SIZE_IN_BITS) >> 3;
+	for (unsigned int i = 0; i < pageSizeInBytes; i++)
+	{
+		appendNewByte(0);
+	}
+}
+
 void File::writeBit(Address a, bool bit)
 {
-	assert(a < m_bitCount);
+	assert(a < m_bitCount());
 	if (bit)
 		m_bytes[a / 8] |= (1 << (a % 8));
 	else
@@ -21,7 +35,7 @@ void File::writeBit(Address a, bool bit)
 
 bool File::readBit(Address a)
 {
-	assert(a < m_bitCount);
+	assert(a < m_bitCount());
 	return (m_bytes[a / 8] >> (a % 8)) & 1;
 }
 
@@ -108,15 +122,17 @@ void File::initializePage(PageIndex pageIndex)
 	}
 	else if (pageIndex == getLastUsedPageIndex() + 1) // we have to append a new page
 	{
-		// TODO
-		// need something like 
-		// void appendAlignedByte(Byte data);
-		// Ahhh I guess I should switch to storing the Bytes in a std::vector and it'll be easy! <---------------------------------
+		appendNewPage();
+		// write the valid bit:
+		Address pageStart = pageIndex << LOG2_OF_PAGE_SIZE_IN_BITS;
+		writeBit(pageStart, true);
 	}
 	else
 	{
+		// write the valid bit:
 		Address pageStart = pageIndex << LOG2_OF_PAGE_SIZE_IN_BITS;
 		writeBit(pageStart, true);
+		// clear other bits:
 		for (unsigned int i = 1; i < (1 << LOG2_OF_PAGE_SIZE_IN_BITS); i++)
 		{
 			writeBit(pageStart + i, false);
@@ -144,7 +160,7 @@ void File::initializePage(PageIndex pageIndex, TypeId id)
 
 PageIndex File::getLastUsedPageIndex()
 {
-	return (m_bitCount / (1 << LOG2_OF_PAGE_SIZE_IN_BITS)) - 1;
+	return (m_bitCount() / (1 << LOG2_OF_PAGE_SIZE_IN_BITS)) - 1;
 }
 
 /*
@@ -169,7 +185,10 @@ bool File::getFirstDataBitOfPage(Address& result, PageIndex pageIndex)
 	}
 }
 
-TypeId File::findItemWithName(String name, unsigned int maxStringDist)
+/*
+Returns 0 in case of fail.
+*/
+TypeId File::findAnyItemWithName(String name, unsigned int maxStringDist)
 {
 	PageIndex pageIndex = 0;
 	while (true)
@@ -180,6 +199,8 @@ TypeId File::findItemWithName(String name, unsigned int maxStringDist)
 		
 		TypeId itemId = readPageItemId(pageIndex);
 		ItemType itemType = itemId.getItemType();
+
+		// Only these 4 types are named.
 		if (itemType != IT_ALBUM &&
 			itemType != IT_ARTIST &&
 			itemType != IT_SONG &&
@@ -188,6 +209,44 @@ TypeId File::findItemWithName(String name, unsigned int maxStringDist)
 			continue;
 		}
 		
+		TypeName itemName = readPageItemName(pageIndex);
+		Name itemName_ = itemName.getValue();
+
+		if (StringDistance(itemName_, name) <= maxStringDist)
+		{
+			return itemId;
+		}
+	}
+	return TypeId(0);
+}
+
+/*
+Returns 0 in case of fail.
+*/
+TypeId File::findItemWithNameAndItemType(String name, ItemType itemType, unsigned int maxStringDist)
+{
+	// Only these 4 types are named.
+	if (itemType != IT_ALBUM &&
+		itemType != IT_ARTIST &&
+		itemType != IT_SONG &&
+		itemType != IT_USER)
+	{
+		return TypeId(0);
+	}
+	PageIndex pageIndex = 0;
+	while (true)
+	{
+		pageIndex++;
+		if (!isPageAFirstPage(pageIndex))
+			continue;
+
+		TypeId itemId = readPageItemId(pageIndex);
+		ItemType itemType = itemId.getItemType();
+		if (itemType != itemType)
+		{
+			continue;
+		}
+
 		TypeName itemName = readPageItemName(pageIndex);
 		Name itemName_ = itemName.getValue();
 
@@ -335,16 +394,17 @@ Returns the page index of the leftmost free page in the entire file.
 PageIndex File::getNextFreePage()
 {
 	unsigned int pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
-	for (PageIndex trial = 1; (trial + 1)*pageSizeInBits <= m_bitCount; trial++)
+	PageIndex trial = 1;
+	for ( ; (trial + 1)*pageSizeInBits <= m_bitCount(); trial++)
 	{
 		if (isPageFree(trial))
 		{
 			return trial;
 		}
 	}
-	// We ran out of memory, pack up and leave.
-	assert(false);
-	return 0; // assertion is gonna kill the program anyway, do this return to suppress a warning
+	// We ran out of free pages, create a new one:
+	appendNewPage();
+	return trial;
 }
 
 /*
@@ -353,7 +413,7 @@ Returns failure iff there's no page owned by the id given. Otherwise returns tha
 bool File::getPageContainingId(PageIndex & result, TypeId id)
 {
 	unsigned int pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
-	for (PageIndex trial = 1; (trial + 1)*pageSizeInBits <= m_bitCount; trial++)
+	for (PageIndex trial = 1; (trial + 1)*pageSizeInBits <= m_bitCount(); trial++)
 	{
 		if (TypeId::equalityCheck(readPageItemId(trial), id))
 		{
@@ -377,10 +437,13 @@ File* File::i()
 
 File::File()
 	: m_nextBitToRW(0)
-	, m_bytes(nullptr)
-	, m_bitCount(0)
 {
 
+}
+
+Address File::m_bitCount()
+{
+	return (Address)(m_bytes.size() * 8);
 }
 
 bool File::isPageFree(PageIndex index)

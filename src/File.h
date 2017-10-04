@@ -5,6 +5,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #pragma once
 
 #include "stdafx.h"
+#include "IType.h"
 
 class TypeId;
 class TypeName;
@@ -12,6 +13,8 @@ class TypeName;
 class File
 {
 public:
+
+	void appendNewPage();
 
 	void writeBit(Address a, bool bit);
 	bool readBit(Address a);
@@ -43,7 +46,8 @@ public:
 	bool isPageAFirstPage(PageIndex index);
 	TypeId readPageItemId(PageIndex index);
 
-	TypeId findItemWithName(String name, unsigned int maxStringDist);
+	TypeId findAnyItemWithName(String name, unsigned int maxStringDist);
+	TypeId findItemWithNameAndItemType(String name, ItemType itemType, unsigned int maxStringDist);
 	
 	static File* i();
 
@@ -51,9 +55,11 @@ private:
 	static File* m_instance;
 	File();
 	
-	Byte* m_bytes = nullptr;
-	Address m_bitCount = 0;
+	std::vector<Byte> m_bytes = std::vector<Byte>{};
+	Address m_bitCount();
 	Address m_nextBitToRW = 0;
+
+	void appendNewByte(Byte b);
 
 	bool isPageFree(PageIndex index);
 	TypeName readPageItemName(PageIndex index);

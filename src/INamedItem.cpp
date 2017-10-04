@@ -15,14 +15,27 @@ Name INamedItem::readName(TypeId thisItemId)
 		assert(false);
 	}
 	Address nameAddress = 0;
-	File::i()->getFirstDataBitOfPage(nameAddress, itemPage);
+	assert(File::i()->getFirstDataBitOfPage(nameAddress, itemPage));
 	nameAddress += sizeof(Id) * 8;
 	TypeName name{Name()};
 	name.read(nameAddress);
 	return name.getValue();
 }
 
+/*
+Prerequisite: there's a page owned by thisItemId.
+*/
 void INamedItem::writeName(TypeId thisItemId, Name name)
 {
-	// TODO
+	PageIndex itemPage;
+	if (!File::i()->getPageContainingId(itemPage, TypeId(thisItemId)))
+	{
+		// Item got constructed but has no page assigned :(
+		assert(false);
+	}
+	Address nameAddress = 0;
+	assert(File::i()->getFirstDataBitOfPage(nameAddress, itemPage));
+	nameAddress += sizeof(Id) * 8;
+	TypeName nameObj{ name };
+	nameObj.write(nameAddress);
 }

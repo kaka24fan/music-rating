@@ -67,9 +67,9 @@ static std::map<PrimaryCommand, std::vector<unsigned int>> PCToNumParams =
 };
 
 
-PrimaryCommand GetPrimaryCommand(String approximation);
-SecondaryCommand GetSecondaryCommand(String approximation);
-ItemType GetItemType(String approximation);
+PrimaryCommand GetPrimaryCommandFromStringApprox(String approximation);
+SecondaryCommand GetSecondaryCommandFromStringApprox(String approximation);
+ItemType GetItemTypeFromStringApprox(String approximation);
 
 void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput);
 
