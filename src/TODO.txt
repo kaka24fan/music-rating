@@ -1,7 +1,5 @@
 ﻿#pragma at-least-once-dude-come-on
 
+How do we handle track numbers in an album? Maybe not at all for now?
 
-		// TODO
-		// need something like 
-		// void appendAlignedByte(Byte data);
-		// Ahhh I guess I should switch to storing the Bytes in a std::vector and it'll be easy! <---------------------------------
+VIEW primary command.

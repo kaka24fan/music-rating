@@ -14,4 +14,8 @@ class INamedItem : public IItem
 public:
 	static Name readName(TypeId thisItemId);
 	static void writeName(TypeId thisItemId, Name name);
+
+	static void writeMemberId(TypeId thisItemId, TypeId memberId);
+	static bool containsMemberId_WithFlagComparison(TypeId thisItemId, TypeId memberId);
+	static std::vector<TypeId> getAllMemberIds(TypeId thisItemId);
 };

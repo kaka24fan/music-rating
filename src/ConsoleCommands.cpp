@@ -12,6 +12,14 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 #include <iostream>
 
+String outputThenGetline(String output)
+{
+	std::wcout << output << "\n";
+	String lineOfInput;
+	std::getline(std::wcin, lineOfInput);
+	return lineOfInput;
+}
+
 PrimaryCommand GetPrimaryCommandFromStringApprox(String approximation)
 {
 	for (auto kvp : PCToString)
@@ -34,7 +42,7 @@ SecondaryCommand GetSecondaryCommandFromStringApprox(String approximation)
 
 /*
 Only valid item types this function may return are Album, Artist, Song, User.
- */
+*/
 ItemType GetItemTypeFromStringApprox(String approximation)
 {
 	for (auto kvp : ITToString)
@@ -43,6 +51,16 @@ ItemType GetItemTypeFromStringApprox(String approximation)
 			return kvp.first;
 	}
 	return IT_INVALID;
+}
+
+FlagType GetFlagTypeFromStringApprox(String approximation)
+{
+	for (auto kvp : FTToString)
+	{
+		if (StringDistance(approximation, kvp.second) == 0)
+			return kvp.first;
+	}
+	return FT_INVALID;
 }
 
 void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput)
@@ -134,8 +152,85 @@ void execute(std::vector<String> userInput)
 		break;
 	case PC_ADDTO: // AddTo Song "Kamienie i mury" Producer "Zeus"
 	{
-		std::wcout << "\nAddTo hasn't been implemented yet. Help yourself.";
-		// TODO: prepare a general dialog system which allows to write out and then wait for user input.
+		String itemTypeStr = userInput.at(1);
+		Name itemNameStr = userInput.at(2);
+
+		ItemType itemType = GetItemTypeFromStringApprox(itemTypeStr); 
+		
+		if (itemType != IT_ALBUM
+			&& itemType != IT_SONG)
+		{
+			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only add to one of the following: Album, Song.";
+			break;
+		}
+
+		TypeId majorItemId = File::i()->findItemWithNameAndItemType(itemNameStr, itemType, 0);
+		if (majorItemId.getValue() == 0)
+		{
+			std::wcout << "\nNo " << (itemType == IT_ALBUM) ? "album" : "song";
+			std::wcout << " titled " << itemNameStr << " exists. Create it first.";
+			break;
+		}
+
+		if (itemType == IT_ALBUM)
+		{
+			String output = L"\nWhich song would you like to add?";
+			String songNameStr = outputThenGetline(output);
+
+			TypeId songId = File::i()->findItemWithNameAndItemType(songNameStr, ItemType::IT_SONG, 0);
+			if (songId.getValue() == 0)
+			{
+				std::wcout << "\nNo such song, try again.";
+				break;
+			}
+
+			if (INamedItem::containsMemberId_WithFlagComparison(majorItemId, songId))
+			{
+				std::wcout << "\nThis song is already present. Try again.";
+				break;
+			}
+
+			//Successful user I/O.
+
+			INamedItem::writeMemberId(majorItemId, songId);
+
+			std::wcout << "\nSuccess!";
+		}
+		else if (itemType == IT_SONG)
+		{
+			String output = L"\nWho would you want to add? Possibilities: Lead, Featuring, Producer.";
+			String flagTypeStr = outputThenGetline(output);
+			FlagType flagType = GetFlagTypeFromStringApprox(flagTypeStr);
+			if (flagType == FT_INVALID)
+			{
+				std::wcout << "\nInvalid flag type. Try again and use Lead, Featuring or Producer.";
+				break;
+			}
+
+			// Have flag type, now get name.
+			output = L"\nWhat is the name of the artist?";
+			String artistNameStr = outputThenGetline(output);
+
+			TypeId artistId = File::i()->findItemWithNameAndItemType(artistNameStr, ItemType::IT_ARTIST, 0);
+			if (artistId.getValue() == 0)
+			{
+				std::wcout << "\nNo such artist, try again.";
+				break;
+			}
+
+			//Successful user I/O.
+			artistId.setFlags(flagType);
+
+			if (INamedItem::containsMemberId_WithFlagComparison(majorItemId, artistId))
+			{
+				std::wcout << "\nThis artist at this role is already present. Try again.";
+				break;
+			}
+			INamedItem::writeMemberId(majorItemId, artistId);
+
+			std::wcout << "\nSuccess!";
+		}
+
 	}
 		break;
 	case PC_REMOVE:
@@ -149,6 +244,9 @@ void execute(std::vector<String> userInput)
 			return;
 		}
 	}
+		break;
+	case PC_VIEW:
+		std::wcout << "\nView hasn't been implemented yet. Help yourself.";
 		break;
 	default:
 

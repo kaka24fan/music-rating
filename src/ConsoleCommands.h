@@ -20,6 +20,7 @@ typedef enum primaryCommand
 	PC_ADDTO,
 	PC_REMOVE,
 	PC_RATE,
+	PC_VIEW,
 } PrimaryCommand;
 
 typedef enum secondaryCommand
@@ -41,6 +42,7 @@ static std::map<PrimaryCommand, String> PCToString =
 	{ PC_ADDTO,				String(L"addto") },
 	{ PC_REMOVE,			String(L"remove") },
 	{ PC_RATE,				String(L"rate") },
+	{ PC_VIEW,				String(L"view") },
 };
 
 static std::map<SecondaryCommand, String> SCToString =
@@ -60,6 +62,13 @@ static std::map<ItemType, String> ITToString =
 	{ IT_USER,				String(L"user") },
 };
 
+static std::map<FlagType, String> FTToString =
+{
+	{ FT_LEAD,				String(L"lead") },
+	{ FT_FEATURING,			String(L"featuring") },
+	{ FT_PRODUCER,			String(L"producer") },
+};
+
 static std::map<PrimaryCommand, std::vector<unsigned int>> PCToNumParams =
 {
 	{ PC_HELP,				std::vector<unsigned int> {0, 1} },
@@ -70,6 +79,7 @@ static std::map<PrimaryCommand, std::vector<unsigned int>> PCToNumParams =
 PrimaryCommand GetPrimaryCommandFromStringApprox(String approximation);
 SecondaryCommand GetSecondaryCommandFromStringApprox(String approximation);
 ItemType GetItemTypeFromStringApprox(String approximation);
+FlagType GetFlagTypeFromStringApprox(String approximation);
 
 void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput);
 

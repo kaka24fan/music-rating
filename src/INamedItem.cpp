@@ -39,3 +39,20 @@ void INamedItem::writeName(TypeId thisItemId, Name name)
 	TypeName nameObj{ name };
 	nameObj.write(nameAddress);
 }
+
+void INamedItem::writeMemberId(TypeId thisItemId, TypeId memberId)
+{
+	//TODO not implemented
+}
+
+bool INamedItem::containsMemberId_WithFlagComparison(TypeId thisItemId, TypeId memberId)
+{
+	//TODO not implemented
+	return false;
+}
+
+std::vector<TypeId> INamedItem::getAllMemberIds(TypeId thisItemId)
+{
+	//TODO not implemented
+	return std::vector<TypeId>();
+}
