@@ -1,6 +1,11 @@
 ﻿#pragma at-least-once-dude-come-on
 
 Implement commands.
+Additional commands:
+ new file 'path'
+ load file 'path'
+ save file
+ exit file
 Make split handle quotes.
 
 Future:

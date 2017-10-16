@@ -433,7 +433,7 @@ File* File::i()
 File::File()
 	: m_nextBitToRW(0)
 {
-
+	initializePage(0);
 }
 
 Address File::m_bitCount()
