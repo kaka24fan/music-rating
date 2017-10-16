@@ -8,6 +8,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include <string>
 
 #include "stringutils.h"
+#include "userio.h"
 #include "ConsoleCommands.h"
 #include <windows.h>
 
@@ -26,11 +27,7 @@ int main(int argc, char *argv[])
 	// MAIN LOOP ------------------------------------------------------------------------------------------------------
 	while (true)
 	{
-		std::getline(std::wcin, lineOfInput);
-		for (auto ch : lineOfInput)
-		{
-			std::wcout << (int)ch << std::endl;
-		}
+		lineOfInput = promptForInput();
 
 		std::vector<String> splitResult = split(lineOfInput, L' ');
 

@@ -6,19 +6,14 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 #include "ProgramState.h"
 #include "stringutils.h"
+#include "userio.h"
 
 #include "User.h"
 #include "File.h"
 
 #include <iostream>
 
-String outputThenGetline(String output)
-{
-	std::wcout << output << "\n";
-	String lineOfInput;
-	std::getline(std::wcin, lineOfInput);
-	return lineOfInput;
-}
+
 
 PrimaryCommand GetPrimaryCommandFromStringApprox(String approximation)
 {
@@ -97,7 +92,24 @@ void execute(std::vector<String> userInput)
 		std::wcout << "\nThere's no command matching \'" << userInput.at(0) << "\'. Try again or type in \'help\' for a list of available commands.";
 		break;
 	case PC_HELP:
-		std::wcout << "\nHelp hasn't been implemented yet. Help yourself.";
+		std::wcout << "\nExample commands:";
+		std::wcout << "\n";
+		std::wcout << "\nHelp";
+		std::wcout << "\n";
+		std::wcout << "\nLogin \"Jasper\"";
+		std::wcout << "\n";
+		std::wcout << "\nCreate Album \"Recovery\"";
+		std::wcout << "\nCreate Artist \"Mac Miller\"";
+		std::wcout << "\nCreate Song \"Forgot About Dre\"";
+		std::wcout << "\nCreate User \"Jasper\"";
+		std::wcout << "\n";
+		std::wcout << "\nAddTo Album \"Recovery\"";
+		std::wcout << "\nAddTo Song \"No Love\"";
+		std::wcout << "\n";
+		std::wcout << "\nView Album \"Recovery\"";
+		std::wcout << "\nView Artist \"Mac Miller\"";
+		std::wcout << "\nView Song \"Forgot About Dre\"";
+		std::wcout << "\nView User \"Jasper\"";
 		break;
 	case PC_LOGIN:
 	{
@@ -150,7 +162,11 @@ void execute(std::vector<String> userInput)
 	case PC_DELETE:
 		std::wcout << "\nDelete hasn't been implemented yet. Help yourself.";
 		break;
-	case PC_ADDTO: // AddTo Song "Kamienie i mury" Producer "Zeus"
+	/*
+	AddTo Song "Kamienie i mury" Producer "Zeus"
+	AddTo Album "Zeus. Jest super." "Orinoko flow"
+	*/
+	case PC_ADDTO: 
 	{
 		String itemTypeStr = userInput.at(1);
 		Name itemNameStr = userInput.at(2);
@@ -172,7 +188,7 @@ void execute(std::vector<String> userInput)
 			break;
 		}
 
-		if (itemType == IT_ALBUM)
+		if (itemType == IT_ALBUM) // e.g. AddTo Song "Kamienie i mury" Producer "Zeus"
 		{
 			String output = L"\nWhich song would you like to add?";
 			String songNameStr = outputThenGetline(output);
@@ -196,7 +212,7 @@ void execute(std::vector<String> userInput)
 
 			std::wcout << "\nSuccess!";
 		}
-		else if (itemType == IT_SONG)
+		else if (itemType == IT_SONG) // e.g. AddTo Song "Kamienie i mury" Producer "Zeus"
 		{
 			String output = L"\nWho would you want to add? Possibilities: Lead, Featuring, Producer.";
 			String flagTypeStr = outputThenGetline(output);
@@ -243,10 +259,58 @@ void execute(std::vector<String> userInput)
 			std::wcout << "\nSome user must be logged in to rate an item.";
 			return;
 		}
+		// TODO ...
 	}
 		break;
-	case PC_VIEW:
-		std::wcout << "\nView hasn't been implemented yet. Help yourself.";
+	case PC_VIEW: // View Song "Gwiazdy"
+	{
+		String itemTypeStr = userInput.at(1);
+		Name itemNameStr = userInput.at(2);
+
+		ItemType itemType = GetItemTypeFromStringApprox(itemTypeStr);
+
+		if (itemType != IT_ALBUM
+			&& itemType != IT_ARTIST
+			&& itemType != IT_SONG
+			&& itemType != IT_USER)
+		{
+			std::wcout << "\n\'" << itemTypeStr << "\' can not be used in this context. You can only view one of the following: Album, Artist, Song, User.";
+			break;
+		}
+
+		TypeId itemId = File::i()->findItemWithNameAndItemType(itemNameStr, itemType, 0);
+		if (itemId.getValue() == 0)
+		{
+			std::wcout << "\nNo " << itemTypeStr << " with name \'" << itemNameStr << "\', try again.";
+			break;
+		}
+
+		switch (itemType)
+		{
+		case IT_ALBUM:
+		{
+			std::wcout << "\nViewing albums hasn't been implemented yet. Sorry.";
+		}
+		break;
+		case IT_ARTIST:
+		{
+			std::wcout << "\nViewing artists hasn't been implemented yet. Sorry.";
+		}
+		break;
+		case IT_SONG:
+		{
+			std::wcout << "\nViewing songs hasn't been implemented yet. Sorry.";
+		}
+		break;
+		case IT_USER:
+		{
+			std::wcout << "\nUser id:         " << itemId.getValue();
+			std::wcout << "\nUser name:       " << INamedItem::readName(itemId); // we already have this name from user input but use this as a double check for consistency
+			std::wcout << "\nFavourite songs: " << "_to be implemented_";
+		}
+		break;
+		} // end switch (itemType)
+	}
 		break;
 	default:
 

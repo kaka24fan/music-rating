@@ -1,5 +1,8 @@
 ﻿#pragma at-least-once-dude-come-on
 
-How do we handle track numbers in an album? Maybe not at all for now?
+Implement commands.
+Make split handle quotes.
 
-VIEW primary command.
+Future:
+ + Handle track numbers.
+ + More viewing options. For now I'll just have one default for each type.

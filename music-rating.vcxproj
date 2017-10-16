@@ -44,6 +44,7 @@
     <ClInclude Include="src\TypeRatingData.h" />
     <ClInclude Include="src\TypeVector.h" />
     <ClInclude Include="src\User.h" />
+    <ClInclude Include="src\userio.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Assert.cpp" />
@@ -58,6 +59,7 @@
     <ClCompile Include="src\TypeId.cpp" />
     <ClCompile Include="src\TypeName.cpp" />
     <ClCompile Include="src\TypeRatingData.cpp" />
+    <ClCompile Include="src\userio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Plan.txt" />
