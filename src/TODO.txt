@@ -8,6 +8,10 @@ Additional commands:
  exit file
 Make split handle quotes.
 
+Bug fix:
+ Need a separate function "read next inside item"
+ and then the basic function "read next bit" should not care about whether it's inside page data or not, etc...
+
 Future:
  + Handle track numbers.
  + More viewing options. For now I'll just have one default for each type.

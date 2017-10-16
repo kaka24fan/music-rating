@@ -32,15 +32,15 @@ void File::writeBit(Address a, bool bit)
 {
 	assert(a < m_bitCount());
 	if (bit)
-		m_bytes[a / 8] |= (1 << (a % 8));
+		m_bytes[a / 8] |= (1 << (7-(a % 8)));
 	else
-		m_bytes[a / 8] &= ~(1 << (a % 8)); 
+		m_bytes[a / 8] &= ~(1 << (7-(a % 8))); 
 }
 
 bool File::readBit(Address a)
 {
 	assert(a < m_bitCount());
-	return (m_bytes[a / 8] >> (a % 8)) & 1;
+	return (m_bytes[a / 8] >> (7-(a % 8))) & 1;
 }
 
 void File::seek(Address a)
@@ -115,6 +115,7 @@ Sets the valid bit and clears all other bits of the page.
 */
 void File::initializePage(PageIndex pageIndex)
 {
+	std::wcout << "\nInit page, last used index = " << getLastUsedPageIndex() << "\n";
 	if (pageIndex > getLastUsedPageIndex() + 1)
 	{
 		assert(false); // why would you skip a page?
@@ -162,8 +163,12 @@ void File::initializePage(PageIndex pageIndex, TypeId id)
 	}
 }
 
+/*
+Returns a nonnegative number as described by function name.
+*/
 PageIndex File::getLastUsedPageIndex()
 {
+	std::wcout << "\n Bits in use: " << m_bitCount();
 	return (m_bitCount() / (1 << LOG2_OF_PAGE_SIZE_IN_BITS)) - 1;
 }
 
@@ -279,7 +284,7 @@ String File::debug_binaryContents()
 		for (unsigned int i = 0; i < 8; i++)
 		{
 			buffToReverseWith.append((byte & 1) ? L"1" : L"0");
-			byte >> 1;
+			byte >>= 1;
 		}
 		for (unsigned int i = 0; i < 8; i++)
 		{
@@ -297,12 +302,15 @@ void File::debug_pageInformation()
 	std::wcout << "\n\nDEBUG - Page Information:\n";
 	Address pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
 
-	// Check if page 0 is empty:
+	// Check if page 0 is marked not free, but otherwise empty:
+	bool pageZeroIsNotFree = readBit(0);
+	std::wcout << (pageZeroIsNotFree ? "\nOk, page 0 is marked non free." : "Problem, page 0 is marked free.");
 	bool pageZeroIsEmpty = true;
-	for (Address a = 0; a < pageSizeInBits; a++)
+	for (Address a = 1; a < pageSizeInBits; a++)
 		pageZeroIsEmpty = pageZeroIsEmpty && !readBit(a);
-	std::wcout << pageZeroIsEmpty ? "\n\nOk, page 0 is empty." : "Problem, page 0 is NOT empty.";
+	std::wcout << (pageZeroIsEmpty ? "\n\nOk, page 0 is empty." : "Problem, page 0 is NOT empty.");
 
+	// What is the last page index in use?
 	PageIndex lastUsedPageIndex = getLastUsedPageIndex();
 	std::wcout << "\n\nPage indices in use: 0 - " << lastUsedPageIndex << " (inclusive).";
 
@@ -370,7 +378,7 @@ bool File::getContinuationPage(PageIndex& result, PageIndex pageIndex)
 
 	for (Address a = firstBitOfTheNextPagePointer; a < firstBitOfNextPage; a++)
 	{
-		result = (result >> 1) + (readBit(a) ? 1 : 0);
+		result = (result << 1) + (readBit(a) ? 1 : 0);
 	}
 
 	return result != 0; // if result is 0, that means there's no continuation page, so return failure. Otherwise, result's ready.
@@ -512,7 +520,9 @@ File* File::i()
 File::File()
 	: m_nextBitToRW(0)
 {
-	initializePage(0);
+	// Initialize the 0th page:
+	appendNewPage();
+	writeBit(0, true);
 }
 
 Address File::m_bitCount()
@@ -522,19 +532,19 @@ Address File::m_bitCount()
 
 bool File::isPageFree(PageIndex index)
 {
-	return !readBit(index >> LOG2_OF_PAGE_SIZE_IN_BITS);
+	return !readBit(index << LOG2_OF_PAGE_SIZE_IN_BITS);
 }
 
 bool File::isPageAFirstPage(PageIndex index)
 {
-	Address pageStart = index >> LOG2_OF_PAGE_SIZE_IN_BITS;
+	Address pageStart = index << LOG2_OF_PAGE_SIZE_IN_BITS;
 	return readBit(pageStart) && readBit(pageStart + 1);
 }
 
 TypeId File::readPageItemId(PageIndex index)
 {
 	assert(isPageAFirstPage(index));
-	Address pageStart = index >> LOG2_OF_PAGE_SIZE_IN_BITS;
+	Address pageStart = index << LOG2_OF_PAGE_SIZE_IN_BITS;
 	TypeId result = TypeId::constructFromAddress(pageStart + 2);
 	return result;
 }
@@ -542,7 +552,7 @@ TypeId File::readPageItemId(PageIndex index)
 TypeName File::readPageItemName(PageIndex index)
 {
 	assert(isPageAFirstPage(index));
-	Address pageStart = index >> LOG2_OF_PAGE_SIZE_IN_BITS;
+	Address pageStart = index << LOG2_OF_PAGE_SIZE_IN_BITS;
 	TypeName result = TypeName::constructFromAddress(pageStart + 2 + sizeof(Id)*8);
 	return result;
 }

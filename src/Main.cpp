@@ -33,6 +33,12 @@ int main(int argc, char *argv[])
 	// MAIN LOOP ------------------------------------------------------------------------------------------------------
 	while (true)
 	{
+		File::i()->debug_pageInformation();
+
+		std::wcout << "\nInit page, last used index = " << File::i()->getLastUsedPageIndex() << "\n";
+
+		std::wcout << "\n" << File::i()->debug_binaryContents();
+
 		lineOfInput = promptForInput();
 
 		std::vector<String> splitResult = split(lineOfInput, L' ');

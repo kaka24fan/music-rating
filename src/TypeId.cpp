@@ -32,12 +32,12 @@ void TypeId::write(Address a)
 void TypeId::readHere()
 {
 	Id val = 0;
-	for (unsigned int i = 0; i < sizeof(Address) * 8; i++)
+	for (unsigned int i = 0; i < sizeof(Id) * 8; i++)
 	{
 		bool nextBit;
 		if (File::i()->readNextBit(nextBit))
 		{
-			val = (val >> 1) + (nextBit ? 1 : 0);
+			val = (val << 1) + (nextBit ? 1 : 0);
 		}
 		else
 		{
@@ -51,7 +51,7 @@ void TypeId::readHere()
 void TypeId::writeHere()
 {
 	Id val = m_val;
-	for (unsigned int i = sizeof(Address) * 8 - 1; i >= 0; i--)
+	for (unsigned int i = sizeof(Id) * 8 - 1; i >= 0; i--)
 	{
 		File::i()->writeNextBit(val & 1);
 		val >>= 1;
