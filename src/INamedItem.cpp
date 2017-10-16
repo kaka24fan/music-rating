@@ -45,7 +45,7 @@ Prerequisite: there's a page owned by thisItemId.
 void INamedItem::writeName(TypeId thisItemId, Name name)
 {
 	PageIndex itemPage;
-	if (!File::i()->getPageContainingId(itemPage, TypeId(thisItemId)))
+	if (!File::i()->getPageContainingId(itemPage, thisItemId))
 	{
 		// Item got constructed but has no page assigned :(
 		assert(false);

@@ -141,6 +141,11 @@ Sets the valid bit and the owner id, clears all other bits of the page.
 void File::initializePage(PageIndex pageIndex, TypeId id)
 {
 	initializePage(pageIndex);
+
+	//set the firstPageBit:
+	Address firstPageIndicatorBit = (pageIndex << LOG2_OF_PAGE_SIZE_IN_BITS) + 1;
+	writeBit(firstPageIndicatorBit, true);
+
 	Address lastBitOfId;
 	getFirstDataBitOfPage(lastBitOfId, pageIndex);
 	lastBitOfId--; // after this line, variable's content matches the name lastBitOfId
@@ -446,7 +451,7 @@ Address File::m_bitCount()
 
 bool File::isPageFree(PageIndex index)
 {
-	return readBit(index >> LOG2_OF_PAGE_SIZE_IN_BITS);
+	return !readBit(index >> LOG2_OF_PAGE_SIZE_IN_BITS);
 }
 
 bool File::isPageAFirstPage(PageIndex index)
