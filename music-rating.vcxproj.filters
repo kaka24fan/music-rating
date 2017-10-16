@@ -93,6 +93,9 @@
     <ClInclude Include="src\userio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\defines.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\File.cpp">

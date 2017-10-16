@@ -49,6 +49,11 @@ public:
 	TypeId findAnyItemWithName(String name, unsigned int maxStringDist);
 	TypeId findItemWithNameAndItemType(String name, ItemType itemType, unsigned int maxStringDist);
 	
+#ifdef MY_DEBUG
+	String debug_binaryContents();
+	void debug_pageInformation();
+#endif
+
 	static File* i();
 
 private:

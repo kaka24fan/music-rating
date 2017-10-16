@@ -57,6 +57,22 @@ static String itemTypeToString(ItemType itemType)
 		return String(L"Very Invalid ItemType");
 	}
 }
+static String flagTypeToString(FlagType flagType)
+{
+	switch (flagType)
+	{
+	case FT_INVALID:
+		return String(L"Invalid FlagType");
+	case FT_LEAD:
+		return String(L"Lead");
+	case FT_FEATURING:
+		return String(L"Featuring");
+	case FT_PRODUCER:
+		return String(L"Producer");
+	default:
+		return String(L"Very Invalid FlagType");
+	}
+}
 
 template <class T>
 class IType

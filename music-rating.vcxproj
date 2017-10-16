@@ -23,6 +23,7 @@
     <ClInclude Include="src\Artist.h" />
     <ClInclude Include="src\Assert.h" />
     <ClInclude Include="src\ConsoleCommands.h" />
+    <ClInclude Include="src\defines.h" />
     <ClInclude Include="src\File.h" />
     <ClInclude Include="src\Globals.h" />
     <ClInclude Include="src\ProgramState.h" />

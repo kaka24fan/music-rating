@@ -9,6 +9,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 #include "Macros.h"
 #include "Globals.h"
+#include "defines.h"
 
 #include "Assert.h"
 #include "typedefs.h"

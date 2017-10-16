@@ -8,6 +8,10 @@ Code written by Jakub (Kuba) Perlin in 2017.
 #include "TypeName.h"
 #include "stringutils.h"
 
+#ifdef MY_DEBUG
+#include <iostream>
+#endif
+
 File* File::m_instance = nullptr;
 
 void File::appendNewByte(Byte b)
@@ -260,6 +264,73 @@ TypeId File::findItemWithNameAndItemType(String name, ItemType itemType, unsigne
 	}
 	return TypeId(0);
 }
+
+#ifdef MY_DEBUG // <--------------------------------------------------------------- DEBUGGING START ---|
+
+/*
+This function is only available if MY_DEBUG is defined.
+*/
+String File::debug_binaryContents()
+{
+	String result = String{};
+	for (Byte byte : m_bytes)
+	{
+		String buffToReverseWith = String{};
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			buffToReverseWith.append((byte & 1) ? L"1" : L"0");
+			byte >> 1;
+		}
+		for (unsigned int i = 0; i < 8; i++)
+		{
+			result.push_back(buffToReverseWith.at(7-i));
+		}
+	}
+	return result;
+}
+
+/*
+This function is only available if MY_DEBUG is defined.
+*/
+void File::debug_pageInformation()
+{
+	std::wcout << "\n\nDEBUG - Page Information:\n";
+	Address pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
+
+	// Check if page 0 is empty:
+	bool pageZeroIsEmpty = true;
+	for (Address a = 0; a < pageSizeInBits; a++)
+		pageZeroIsEmpty = pageZeroIsEmpty && !readBit(a);
+	std::wcout << pageZeroIsEmpty ? "\n\nOk, page 0 is empty." : "Problem, page 0 is NOT empty.";
+
+	PageIndex lastUsedPageIndex = getLastUsedPageIndex();
+	std::wcout << "\n\nPage indices in use: 0 - " << lastUsedPageIndex << " (inclusive).";
+
+	for (PageIndex i = 1; i <= lastUsedPageIndex; i++)
+	{
+		std::wcout << "\n\n---Page #" << i << ":";
+
+		bool pageIsFree = isPageFree(i);
+		std::wcout << pageIsFree ? "\nPage is free." : "\nPage is NOT free.";
+
+		bool pageIsFirst = isPageAFirstPage(i);
+		std::wcout << pageIsFirst ? "\nPage is the first page of an item." : "\nPage is NOT the first page of an item.";
+
+		if (pageIsFirst)
+		{
+			TypeId ownerId = readPageItemId(i);
+			std::wcout << "\nPage is owned by id " << ownerId.getValue();
+
+			ItemType ownerType = ownerId.getItemType();
+			std::wcout << "\nThe owner's type is " << itemTypeToString(ownerType);
+
+			FlagType flagType = ownerId.getFlags();
+			std::wcout << "\nThe owner's flags are " << flagTypeToString(flagType);
+		}
+		// TODO: Think what things are unexpected and list them at the end.
+	}
+}
+#endif // <-------------------------------------------------------------------------- DEBUGGING END ---|
 
 /*
 Returns true iff the address given points to a bit of actual data, not page metadata.
