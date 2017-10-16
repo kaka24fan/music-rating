@@ -58,33 +58,46 @@ FlagType GetFlagTypeFromStringApprox(String approximation)
 	return FT_INVALID;
 }
 
-void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput)
+bool checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput)
 {
 	if (PCToNumParams.find(pc) == PCToNumParams.end())
-		return; // No constraints were put, allow progress.
+		return true; // No constraints were put, allow progress.
 
-	unsigned int fromUser = (unsigned int) userInput.size() - 1;
+	unsigned int fromUser = (unsigned int) userInput.size() - 1; // -1 for the primary command that must have been input too
 	for (unsigned int acceptedSize : PCToNumParams.at(pc))
 	{
 		if (fromUser == acceptedSize)
 		{
-			return;
+			return true;
 		}
 	}
 
 	// Display user-error message.
-	std::wcout << "\nIncorrect number of parameters (" << fromUser << ")for command \'" << PCToString.at(pc) << "\', should be one of the following: ";
+	std::wcout << "\nIncorrect number of parameters (" << fromUser << ") for command \'" << PCToString.at(pc) << "\', should be one of the following: ";
+	
+	bool thisIsFirstItem = true; // for pretty printing purposes
 	for (unsigned int acceptedSize : PCToNumParams.at(pc))
 	{
-		std::wcout << acceptedSize << ", ";
+		if (thisIsFirstItem)
+		{
+			thisIsFirstItem = false;
+			std::wcout << acceptedSize;
+		}
+		else
+		{ 
+			std::wcout << ", " << acceptedSize;
+		}
 	}
 	std::wcout << ".";
+
+	return false;
 }
 
 void execute(std::vector<String> userInput)
 {
 	PrimaryCommand pc = GetPrimaryCommandFromStringApprox(userInput.at(0));
-	checkNumOfParams(pc, userInput);
+	if (!checkNumOfParams(pc, userInput))
+		return;
 
 	switch (pc)
 	{
@@ -92,24 +105,46 @@ void execute(std::vector<String> userInput)
 		std::wcout << "\nThere's no command matching \'" << userInput.at(0) << "\'. Try again or type in \'help\' for a list of available commands.";
 		break;
 	case PC_HELP:
-		std::wcout << "\nExample commands:";
-		std::wcout << "\n";
-		std::wcout << "\nHelp";
-		std::wcout << "\n";
-		std::wcout << "\nLogin \"Jasper\"";
-		std::wcout << "\n";
-		std::wcout << "\nCreate Album \"Recovery\"";
-		std::wcout << "\nCreate Artist \"Mac Miller\"";
-		std::wcout << "\nCreate Song \"Forgot About Dre\"";
-		std::wcout << "\nCreate User \"Jasper\"";
-		std::wcout << "\n";
-		std::wcout << "\nAddTo Album \"Recovery\"";
-		std::wcout << "\nAddTo Song \"No Love\"";
-		std::wcout << "\n";
-		std::wcout << "\nView Album \"Recovery\"";
-		std::wcout << "\nView Artist \"Mac Miller\"";
-		std::wcout << "\nView Song \"Forgot About Dre\"";
-		std::wcout << "\nView User \"Jasper\"";
+	{
+		if (userInput.size() == 1)
+		{   // just list the commands
+			std::wcout << "\nExample commands:";
+			std::wcout << "\n";
+			std::wcout << "\nHelp" << "                            <--- " << "Displays a list of example commands.";
+			std::wcout << "\nHelp Create" << "                     <--- " << "Helps you with a specific command, e.g. Create.";
+			std::wcout << "\n";
+			std::wcout << "\nLogin \"Jasper\"" << "                  <--- " << "Logs you into a specific user's account.";
+			std::wcout << "\n";
+			std::wcout << "\nCreate Album \"Recovery\"" << "         <--- " << "Creates a new album with the given name.";
+			std::wcout << "\nCreate Artist \"Mac Miller\"" << "      <--- " << "Creates a new artist with the given name.";
+			std::wcout << "\nCreate Song \"Forgot About Dre\"" << "  <--- " << "Creates a new song with the given name.";
+			std::wcout << "\nCreate User \"Jasper\"" << "            <--- " << "Creates a new user with the given name.";
+			std::wcout << "\n";
+			std::wcout << "\nAddTo Album \"Recovery\"" << "          <--- " << "Adds a new song to an album. Will request extra input during execution.";
+			std::wcout << "\nAddTo Song \"No Love\"" << "            <--- " << "Adds a new artist to a song. Will request extra input during execution.";
+			std::wcout << "\n";
+			std::wcout << "\nView Album \"Recovery\"" << "           <--- " << "Shows information about the album with the given name.";
+			std::wcout << "\nView Artist \"Mac Miller\"" << "        <--- " << "Shows information about the artist with the given name.";
+			std::wcout << "\nView Song \"Forgot About Dre\"" << "    <--- " << "Shows information about the song with the given name.";
+			std::wcout << "\nView User \"Jasper\"" << "              <--- " << "Shows information about the user with the given name.";
+		}
+		else if (userInput.size() == 2)
+		{
+			String help_pc_str = userInput.at(1);
+			PrimaryCommand help_pc = GetPrimaryCommandFromStringApprox(help_pc_str);
+			switch (help_pc)
+			{
+			case PC_INVALIDCOMMAND:
+				std::wcout << "\nCould not recognize command \'" << help_pc_str << "\'. Try again.";
+				break;
+			case PC_HELP:
+				std::wcout << "Type \'help\' to list commands or \'help <command-name>\' to get help on a specific command";
+				break;
+			default:
+				std::wcout << "Help for the command \'" << help_pc_str << "\' has not been implemented yet. Try again later.";
+			}
+		}
+	}
 		break;
 	case PC_LOGIN:
 	{

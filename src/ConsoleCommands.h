@@ -71,8 +71,14 @@ static std::map<FlagType, String> FTToString =
 
 static std::map<PrimaryCommand, std::vector<unsigned int>> PCToNumParams =
 {
-	{ PC_HELP,				std::vector<unsigned int> {0, 1} },
+	{ PC_HELP,				std::vector<unsigned int> {0, 1} }, // the 1 is for more specific help than just list of comms
 	{ PC_LOGIN,				std::vector<unsigned int> {1} },
+	{ PC_CREATE,			std::vector<unsigned int> {2} },
+	{ PC_DELETE,			std::vector<unsigned int> { } }, //TODO
+	{ PC_ADDTO,				std::vector<unsigned int> {2} },
+	{ PC_REMOVE,			std::vector<unsigned int> { } }, //TODO
+	{ PC_RATE,				std::vector<unsigned int> { } }, //TODO
+	{ PC_VIEW,				std::vector<unsigned int> {2} },
 };
 
 
@@ -81,6 +87,6 @@ SecondaryCommand GetSecondaryCommandFromStringApprox(String approximation);
 ItemType GetItemTypeFromStringApprox(String approximation);
 FlagType GetFlagTypeFromStringApprox(String approximation);
 
-void checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput);
+bool checkNumOfParams(PrimaryCommand pc, std::vector<String> userInput);
 
 void execute(std::vector<String> userInput);

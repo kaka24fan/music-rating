@@ -16,7 +16,7 @@ String getPromptString()
 String promptForInput()
 {
 	String lineOfInput;
-	std::wcout << getPromptString() << "> ";
+	std::wcout << "\n\n" << getPromptString() << "> ";
 	std::getline(std::wcin, lineOfInput);
 	// trim the "guest> " off?
 	return lineOfInput;

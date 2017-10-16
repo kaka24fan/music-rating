@@ -232,6 +232,9 @@ TypeId File::findItemWithNameAndItemType(String name, ItemType itemType, unsigne
 	while (true)
 	{
 		pageIndex++;
+		if (pageIndex > File::i()->getLastUsedPageIndex())
+			break;
+
 		if (!isPageAFirstPage(pageIndex))
 			continue;
 
