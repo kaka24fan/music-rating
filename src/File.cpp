@@ -48,54 +48,60 @@ void File::seek(Address a)
 	m_nextBitToRW = a;
 }
 
+/*
+Writes the bit where the file pointer currently points. Then increments the file pointer.
+*/
 void File::writeNextBit(bool bit)
 {
+	assert(m_nextBitToRW < m_bitCount());
 	writeBit(m_nextBitToRW++, bit);
-
-	if (!isAddressInsidePageData(m_nextBitToRW))
-	{
-		PageIndex currPage = m_nextBitToRW >> LOG2_OF_PAGE_SIZE_IN_BITS;
-		PageIndex nextPage = 0;
-		if (!getContinuationPage(nextPage, currPage))
-		{
-			// There's no continuation page, create new one.
-			nextPage = getNextFreePage();
-
-			setContinuationPagePointer(currPage, nextPage);
-			initializePage(nextPage);
-		}
-
-		// This assert is supposed to be impossible to fail - "nextPage" should not be free if we picked it to be the next page.
-		assert(getFirstDataBitOfPage(nextPage, m_nextBitToRW));
-	}
 }
 
-bool File::readNextBit(bool& result)
+/*
+Reads the bit where the file pointer currently points. Then increments the file pointer.
+*/
+bool File::readNextBit()
 {
-	// To be returned.
-	if (!isAddressInsidePageData(m_nextBitToRW))
-	{
-		return false;
-	}
-	
-	result = readBit(m_nextBitToRW++);
-	
-	if (!isAddressInsidePageData(m_nextBitToRW))
-	{
-		PageIndex currPage = m_nextBitToRW >> LOG2_OF_PAGE_SIZE_IN_BITS;
-		PageIndex nextPage = 0;
-
-		if (getContinuationPage(nextPage, currPage))
-		{
-			bool firstDataBitOfNextPage = false;
-			assert(getFirstDataBitOfPage(nextPage, firstDataBitOfNextPage));
-			m_nextBitToRW = firstDataBitOfNextPage;
-		}
-		// otherwise leave the m_nextBitToRW outside of data bits and the next read will fail
-	}
-	return true;
+	assert(m_nextBitToRW < m_bitCount());
+	return readBit(m_nextBitToRW++);
 }
 
+/*
+Prerequsite: The file pointer points inside item data (i.e. not page metadata).
+
+Writes the bit where the file pointer currently points. 
+Then moves the file pointer to the next bit belonging to the item currently that was just written to.
+If there is no such bit (i.e. was reading the last bit of last page), a new page is claimed for that item
+and the file pointer is set to its first data bit. (see definition of getNextBitInAnItem)
+*/
+void File::writeNextItemBit(bool bit)
+{
+	// Can't use writeNextBit because it would increment the file pointer!
+	writeBit(m_nextBitToRW, bit);
+
+	m_nextBitToRW = getNextBitInAnItem(m_nextBitToRW);
+}
+
+/*
+Prerequsite: The file pointer points inside item data (i.e. not page metadata).
+
+Reads the bit where the file pointer currently points.
+Then moves the file pointer to the next bit belonging to the item that was just read.
+If there is no such bit (i.e. was reading the last bit of last page), a new page is claimed for that item
+and the file pointer is set to its first data bit. (see definition of getNextBitInAnItem)
+*/
+bool File::readNextItemBit()
+{
+	// Can't use writeNextBit because it would increment the file pointer!
+	bool result = readBit(m_nextBitToRW);
+
+	m_nextBitToRW = getNextBitInAnItem(m_nextBitToRW);
+	return result;
+}
+
+/*
+Returns the (unique) 'file pointer'.
+*/
 Address File::getNextBitToRW()
 {
 	return m_nextBitToRW;
@@ -319,10 +325,10 @@ void File::debug_pageInformation()
 		std::wcout << "\n\n---Page #" << i << ":";
 
 		bool pageIsFree = isPageFree(i);
-		std::wcout << pageIsFree ? "\nPage is free." : "\nPage is NOT free.";
+		std::wcout << (pageIsFree ? "\nPage is free." : "\nPage is NOT free.");
 
 		bool pageIsFirst = isPageAFirstPage(i);
-		std::wcout << pageIsFirst ? "\nPage is the first page of an item." : "\nPage is NOT the first page of an item.";
+		std::wcout << (pageIsFirst ? "\nPage is the first page of an item." : "\nPage is NOT the first page of an item.");
 
 		if (pageIsFirst)
 		{
@@ -346,24 +352,26 @@ Returns true iff the address given points to a bit of actual data, not page meta
 bool File::isAddressInsidePageData(Address a)
 {
 	PageIndex thatPageIndex = a >> LOG2_OF_PAGE_SIZE_IN_BITS;
-	Address firstDataBit = 0;
-	if (!getFirstDataBitOfPage(firstDataBit, thatPageIndex))
+	if (isPageFree(thatPageIndex))
 	{
 		// we're in a free page
 		return false;
 	}
-	if (firstDataBit > a)
+
+	Address firstDataBit = 0;
+	getFirstDataBitOfPage(firstDataBit, thatPageIndex);
+	if (a < firstDataBit)
 	{
 		// we're too early
 		return false;
 	}
-	if (a >= getFirstBitOfTheNextPagePointer(thatPageIndex))
+	if (getFirstBitOfTheNextPagePointer(thatPageIndex) <= a)
 	{
 		// we're too late
 		return false;
 	}
-	return true;
 
+	return true;
 }
 
 /*
@@ -415,12 +423,45 @@ unsigned int File::getSizeOfNextPagePointer()
 }
 
 /*
+Prerequsite: The 'previous' address lies inside item data (i.e. not page metadata).
+
+Returns the next bit belonging to the item containing 'previous'.
+If there is no such bit (i.e. was reading the last bit of last page), a new page is claimed for that item
+and the file pointer is set to its first data bit.
+*/
+Address File::getNextBitInAnItem(Address previous)
+{
+	assert(isAddressInsidePageData(previous));
+
+	previous++;
+	if (!isAddressInsidePageData(previous))
+	{
+		PageIndex currPage = previous >> LOG2_OF_PAGE_SIZE_IN_BITS;
+		PageIndex nextPage = 0;
+
+		if (!getContinuationPage(nextPage, currPage))
+		{
+			// There's no continuation page set yet, create new one.
+			nextPage = getNextFreePage();
+
+			setContinuationPagePointer(currPage, nextPage);
+			initializePage(nextPage);
+		}
+
+		// This assert should be impossible to fail - "nextPage" should not be free if we picked it to be the next page.
+		// It does assign the correct value to 'previous' (passed by reference).
+		assert(getFirstDataBitOfPage(previous, nextPage));
+	}
+	return previous;
+}
+
+/*
 Writes a byte of data to the file, given that the address given is divisible by 8 (aligned).
 */
 void File::writeAlignedByte(Address a, Byte data)
 {
 	assert(a % 8 == 0);
-	for (unsigned int i = sizeof(Byte) * 8 - 1; i >= 0; i--)
+	for (int i = sizeof(Byte) * 8 - 1; i >= 0; i--)
 	{
 		writeBit(a + i, data & 1);
 		data >>= 1;
@@ -447,7 +488,7 @@ Writes a byte of data to the file, starting wherever the file pointer currently 
 void File::writeNextAlignedByte(Byte data)
 {
 	assert(m_nextBitToRW % 8 == 0);
-	for (unsigned int i = sizeof(Byte) * 8 - 1; i >= 0; i--)
+	for (int i = sizeof(Byte) * 8 - 1; i >= 0; i--)
 	{
 		writeNextBit(data & 1);
 		data >>= 1;
@@ -463,8 +504,7 @@ Byte File::readNextAlignedByte()
 	Byte result = 0;
 	for (unsigned int i = 0; i < sizeof(Byte) * 8; i++)
 	{
-		bool nextBit;
-		readNextBit(nextBit);
+		bool nextBit = readNextBit();
 		result = (result >> 1) + (nextBit ? 1 : 0);
 	}
 	return result;
@@ -545,7 +585,7 @@ TypeId File::readPageItemId(PageIndex index)
 {
 	assert(isPageAFirstPage(index));
 	Address pageStart = index << LOG2_OF_PAGE_SIZE_IN_BITS;
-	TypeId result = TypeId::constructFromAddress(pageStart + 2);
+	TypeId result = TypeId::constructFromAddressInPageMetadata(pageStart + 2);
 	return result;
 }
 

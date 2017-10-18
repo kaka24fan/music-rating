@@ -28,6 +28,10 @@ public:
 	
 	static bool equalityCheck(TypeId id1, TypeId id2);
 
+	void readFromPageMetadata(Address a);
+	void writeToPageMetadata(Address a);
+	static TypeId constructFromAddressInPageMetadata(Address a);
+
 	// Inherited via IType
 	virtual void writeTerminatorOfMyType(Address a) override;
 	virtual void writeTerminatorOfMyTypeHere() override;

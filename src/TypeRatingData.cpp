@@ -77,16 +77,8 @@ void TypeRatingData::readHere()
 	RatingData val = 0;
 	for (unsigned int i = 0; i < sizeof(Address) * 8; i++)
 	{
-		bool nextBit;
-		if (File::i()->readNextBit(nextBit))
-		{
-			val = (val >> 1) + (nextBit ? 1 : 0);
-		}
-		else
-		{
-			// We got to the end of item's last page, we should have known there is nothing to read that far.
-			assert(false);
-		}
+		bool nextBit = File::i()->readNextItemBit();
+		val = (val >> 1) + (nextBit ? 1 : 0);
 	}
 	m_val = val;
 }
@@ -94,9 +86,9 @@ void TypeRatingData::readHere()
 void TypeRatingData::writeHere()
 {
 	RatingData val = m_val;
-	for (unsigned int i = sizeof(Address) * 8 - 1; i >= 0; i--)
+	for (int i = sizeof(Address) * 8 - 1; i >= 0; i--)
 	{
-		File::i()->writeNextBit(val & 1);
+		File::i()->writeNextItemBit(val & 1);
 		val >>= 1;
 	}
 }

@@ -52,7 +52,6 @@ void INamedItem::writeName(TypeId thisItemId, Name name)
 	}
 	Address nameAddress = 0;
 	assert(File::i()->getFirstDataBitOfPage(nameAddress, itemPage));
-	nameAddress += sizeof(Id) * 8;
 	TypeName nameObj{ name };
 	nameObj.write(nameAddress);
 }

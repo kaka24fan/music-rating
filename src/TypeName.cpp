@@ -12,7 +12,7 @@ TypeName::TypeName(Name val)
 
 TypeName TypeName::constructFromAddress(Address a)
 {
-	TypeName result(0);
+	TypeName result(L"");
 	result.read(a);
 	return result;
 }
@@ -62,11 +62,8 @@ void TypeName::readHere()
 		Char nextChar = 0;
 		for (unsigned int i = 0; i < sizeof(Char) * 8; i++)
 		{
-			bool nextBit;
-			if (File::i()->readNextBit(nextBit))
-			{
-				nextChar = (nextChar >> 1) + (nextBit ? 1 : 0);
-			}
+			bool nextBit = File::i()->readNextItemBit();
+			nextChar = (nextChar >> 1) + (nextBit ? 1 : 0);
 		}
 		if (nextChar != 0)
 		{
@@ -86,8 +83,9 @@ void TypeName::writeHere()
 	for (Char c : m_val)
 	{
 		Char nextChar = c;
-		bool buffer[sizeof(nextChar) * 8];
-		for (unsigned int i = sizeof(nextChar) * 8 - 1; i >= 0; i--)
+		const int bitBufferSize = sizeof(Char) * 8;
+		bool buffer[bitBufferSize];
+		for (int i = bitBufferSize - 1; i >= 0; i--)
 		{
 			buffer[i] = (bool)(nextChar & 1);
 			nextChar >>= 1;
@@ -95,7 +93,7 @@ void TypeName::writeHere()
 		
 		for (bool bitsInRightOrder : buffer)
 		{
-			File::i()->writeNextBit(bitsInRightOrder);
+			File::i()->writeNextItemBit(bitsInRightOrder);
 		}
 	}
 }

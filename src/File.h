@@ -21,7 +21,9 @@ public:
 
 	void seek(Address a);
 	void writeNextBit(bool bit);
-	bool readNextBit(bool& result);
+	bool readNextBit();
+	void writeNextItemBit(bool bit);
+	bool readNextItemBit();
 	Address getNextBitToRW();
 
 	void loadFromDisk(std::string path);
@@ -73,4 +75,6 @@ private:
 	void setContinuationPagePointer(PageIndex origin, PageIndex continuation);
 	Address getFirstBitOfTheNextPagePointer(PageIndex pageIndex);
 	unsigned int getSizeOfNextPagePointer();
+
+	Address getNextBitInAnItem(Address previous);
 };
