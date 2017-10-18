@@ -53,6 +53,7 @@ public:
 	
 #ifdef MY_DEBUG
 	String debug_binaryContents();
+	String debug_prettyBinaryContents();
 	void debug_pageInformation();
 #endif
 

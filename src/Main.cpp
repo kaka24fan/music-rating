@@ -35,9 +35,10 @@ int main(int argc, char *argv[])
 	{
 		File::i()->debug_pageInformation();
 
-		std::wcout << "\nInit page, last used index = " << File::i()->getLastUsedPageIndex() << "\n";
 
-		std::wcout << "\n" << File::i()->debug_binaryContents();
+		std::wcout << "\n\n=========> BEGIN DEBUG - Binary file contents: <=========\n";
+		std::wcout << "\n" << File::i()->debug_prettyBinaryContents();
+		std::wcout << "\n=========> END OF DEBUG - Binary file contents: <=========\n";
 
 		lineOfInput = promptForInput();
 

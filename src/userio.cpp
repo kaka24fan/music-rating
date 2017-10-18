@@ -1,6 +1,7 @@
 #include "userio.h"
 
 #include <iostream>
+#include <Windows.h>
 
 #include "TypeId.h"
 #include "INamedItem.h"
@@ -16,9 +17,20 @@ String getPromptString()
 String promptForInput()
 {
 	String lineOfInput;
-	std::wcout << "\n\n" << getPromptString() << "> ";
+	std::wcout << "\n\n";
+
+	// Set text color to light green:
+	HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hStdOut, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	
+	std::wcout << getPromptString();
+	std::wcout << "> ";
+
+	// Set text color back to standard white:
+	SetConsoleTextAttribute(hStdOut, FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_RED);
+
 	std::getline(std::wcin, lineOfInput);
-	// trim the "guest> " off?
+	// no need to trim the "guest> " off?
 	return lineOfInput;
 }
 

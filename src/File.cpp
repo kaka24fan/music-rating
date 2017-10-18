@@ -10,6 +10,7 @@ Code written by Jakub (Kuba) Perlin in 2017.
 
 #ifdef MY_DEBUG
 #include <iostream>
+#include <sstream>
 #endif
 
 File* File::m_instance = nullptr;
@@ -121,7 +122,6 @@ Sets the valid bit and clears all other bits of the page.
 */
 void File::initializePage(PageIndex pageIndex)
 {
-	std::wcout << "\nInit page, last used index = " << getLastUsedPageIndex() << "\n";
 	if (pageIndex > getLastUsedPageIndex() + 1)
 	{
 		assert(false); // why would you skip a page?
@@ -174,7 +174,6 @@ Returns a nonnegative number as described by function name.
 */
 PageIndex File::getLastUsedPageIndex()
 {
-	std::wcout << "\n Bits in use: " << m_bitCount();
 	return (m_bitCount() / (1 << LOG2_OF_PAGE_SIZE_IN_BITS)) - 1;
 }
 
@@ -294,7 +293,7 @@ String File::debug_binaryContents()
 		}
 		for (unsigned int i = 0; i < 8; i++)
 		{
-			result.push_back(buffToReverseWith.at(7-i));
+			result.push_back(buffToReverseWith.at(7 - i));
 		}
 	}
 	return result;
@@ -303,22 +302,71 @@ String File::debug_binaryContents()
 /*
 This function is only available if MY_DEBUG is defined.
 */
+String File::debug_prettyBinaryContents()
+{
+	PageIndex lastUsedPageIndex = getLastUsedPageIndex();
+	std::wstringstream stream{};
+	String raw = debug_binaryContents();
+
+	stream << raw << "\n\n";
+
+	for (PageIndex pi = 0; pi <= lastUsedPageIndex; pi++)
+	{
+		Address firstBitOfTheNextPagePointer = getFirstBitOfTheNextPagePointer(pi);
+		Address pageOffsetIntoRawString = (pi << LOG2_OF_PAGE_SIZE_IN_BITS);
+		
+		stream << "\n---Page #" << pi << ":";
+		stream << "\nfree=" << (raw.at(pageOffsetIntoRawString + 0) == L'1') ? "0" : "1";
+		stream << ", first=" << (raw.at(pageOffsetIntoRawString + 1) == L'1') ? "1" : "0";
+
+		unsigned int pos = pageOffsetIntoRawString + 2;
+
+		if (raw.at(pageOffsetIntoRawString + 1) == L'1') // i.e. the page is a first page, so it has an owner id
+		{
+			stream << ", ownerId=" << raw.substr(pageOffsetIntoRawString + 2, sizeof(Id) * 8);
+			pos += sizeof(Id) * 8;
+		}
+		stream << ",\ndata=";
+		for (unsigned int counter = 0; pos < firstBitOfTheNextPagePointer; pos++)
+		{
+			stream << raw.at(pos);
+			counter++;
+			if (counter == 8 && pos != firstBitOfTheNextPagePointer-1) // 2nd condition only so that we don't finish with an underscore.
+			{
+				counter = 0;
+				stream << L'_'; // separate bytes of data with underscores
+			}
+		}
+
+		Address firstBitOfTheNextPage = (pi+1) << LOG2_OF_PAGE_SIZE_IN_BITS;
+		unsigned int pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
+		unsigned int bitsOfPagePointer = firstBitOfTheNextPage - firstBitOfTheNextPagePointer;
+		stream << ",\nnextPageIndex=" << raw.substr(pageOffsetIntoRawString + (pageSizeInBits - bitsOfPagePointer), bitsOfPagePointer);
+
+		stream << "\n";
+	}
+	return stream.str();
+}
+
+/*
+This function is only available if MY_DEBUG is defined.
+*/
 void File::debug_pageInformation()
 {
-	std::wcout << "\n\nDEBUG - Page Information:\n";
+	std::wcout << "\n\n=========> BEGIN DEBUG - Page Information: <=========\n";
 	Address pageSizeInBits = 1 << LOG2_OF_PAGE_SIZE_IN_BITS;
 
 	// Check if page 0 is marked not free, but otherwise empty:
 	bool pageZeroIsNotFree = readBit(0);
-	std::wcout << (pageZeroIsNotFree ? "\nOk, page 0 is marked non free." : "Problem, page 0 is marked free.");
+	std::wcout << (pageZeroIsNotFree ? "\nOk, page #0 is marked non free." : "Problem, page #0 is marked free.");
 	bool pageZeroIsEmpty = true;
 	for (Address a = 1; a < pageSizeInBits; a++)
 		pageZeroIsEmpty = pageZeroIsEmpty && !readBit(a);
-	std::wcout << (pageZeroIsEmpty ? "\n\nOk, page 0 is empty." : "Problem, page 0 is NOT empty.");
+	std::wcout << (pageZeroIsEmpty ? "\n\nOk, page #0 is empty." : "Problem, page #0 is NOT empty.");
 
 	// What is the last page index in use?
 	PageIndex lastUsedPageIndex = getLastUsedPageIndex();
-	std::wcout << "\n\nPage indices in use: 0 - " << lastUsedPageIndex << " (inclusive).";
+	std::wcout << "\n\nPage indices in use: #0 - #" << lastUsedPageIndex << " (inclusive).";
 
 	for (PageIndex i = 1; i <= lastUsedPageIndex; i++)
 	{
@@ -333,16 +381,18 @@ void File::debug_pageInformation()
 		if (pageIsFirst)
 		{
 			TypeId ownerId = readPageItemId(i);
-			std::wcout << "\nPage is owned by id " << ownerId.getValue();
+			std::wcout << "\nPage is owned by id " << ownerId.getValue() << ".";
 
 			ItemType ownerType = ownerId.getItemType();
-			std::wcout << "\nThe owner's type is " << itemTypeToString(ownerType);
+			std::wcout << "\nThe owner's type is " << itemTypeToString(ownerType) << ".";
 
 			FlagType flagType = ownerId.getFlags();
-			std::wcout << "\nThe owner's flags are " << flagTypeToString(flagType);
+			std::wcout << "\nThe owner's flags are " << flagTypeToString(flagType) << ".";
 		}
 		// TODO: Think what things are unexpected and list them at the end.
 	}
+
+	std::wcout << "\n\n=========> END OF DEBUG - Page Information: <=========\n";
 }
 #endif // <-------------------------------------------------------------------------- DEBUGGING END ---|
 
@@ -397,10 +447,10 @@ Sets the continuation page pointer of the origin page to point to the continuati
 */
 void File::setContinuationPagePointer(PageIndex origin, PageIndex continuation)
 {
-	Address lastBitOfTheNextPagePointer = (origin + 1) << LOG2_OF_PAGE_SIZE_IN_BITS;
+	Address lastBitOfTheNextPagePointer = ((origin + 1) << LOG2_OF_PAGE_SIZE_IN_BITS) - 1;
 	for (Address a = lastBitOfTheNextPagePointer; a >= getFirstBitOfTheNextPagePointer(origin); a--)
 	{
-		writeBit(a, continuation & 1);
+		writeBit(a, (bool)(continuation & 1));
 		continuation >>= 1;
 	}
 }
